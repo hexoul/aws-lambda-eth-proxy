@@ -12,4 +12,5 @@
 *.out
 
 bin/*
+eth-rpc/*.swp
 vendor/*
