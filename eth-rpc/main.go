@@ -14,13 +14,13 @@ import (
 
 type RpcRequest struct {
 	Jsonrpc string        `json:"jsonrpc"`
-	Id      uint32        `json:"id"`
+	Id      int32         `json:"id"`
 	Method  string        `json:"method"`
 	Params  []interface{} `json:"params"`
 }
 
 type RpcError struct {
-	Code    int32  `json:code"`
+	Code    int    `json:code"`
 	Message string `json:message"`
 }
 
@@ -61,7 +61,11 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	var resp RpcResponse
 	json.Unmarshal([]byte(respBody), &resp)
 	fmt.Printf("%#v\n", resp)
-	return events.APIGatewayProxyResponse{Body: respBody, StatusCode: 200}, nil
+	retCode := 200
+	if resp.Error.Code != 0 {
+		retCode = 400
+	}
+	return events.APIGatewayProxyResponse{Body: respBody, StatusCode: retCode}, nil
 }
 
 func main() {
