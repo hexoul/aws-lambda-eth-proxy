@@ -14,15 +14,21 @@ import (
 
 type RpcRequest struct {
 	Jsonrpc string        `json:"jsonrpc"`
+	Id      uint32        `json:"id"`
 	Method  string        `json:"method"`
 	Params  []interface{} `json:"params"`
-	Id      uint32        `json:"id"`
+}
+
+type RpcError struct {
+	Code    int32  `json:code"`
+	Message string `json:message"`
 }
 
 type RpcResponse struct {
-	Jsonrpc string `json:"jsonrpc"`
-	Id      uint32 `json:"id"`
-	Result  string `json:"result"`
+	Jsonrpc string   `json:"jsonrpc"`
+	Id      uint32   `json:"id"`
+	Result  string   `json:"result"`
+	Error   RpcError `json:"error"`
 }
 
 func DoRpc(targetUrl string, msg string) string {
