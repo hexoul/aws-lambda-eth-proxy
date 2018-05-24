@@ -49,7 +49,7 @@ func DoRpc(targetUrl string, msg string) string {
 }
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	// Parsing JSON body
+	// Validate RPC request
 	var req RpcRequest
 	json.Unmarshal([]byte(request.Body), &req)
 	fmt.Printf("%#v\n", req)
