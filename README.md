@@ -1,4 +1,4 @@
-# GoEthRpcOnAwsLambda
+# Eth JSON-RPC on AWS Lambda
 AWS Lambda code to call JSON-RPC of ethereum written in Golang
 
 # Usage
