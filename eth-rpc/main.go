@@ -25,15 +25,15 @@ type RpcError struct {
 }
 
 type RpcResponse struct {
-	Jsonrpc string   `json:"jsonrpc"`
-	Id      uint32   `json:"id"`
-	Result  string   `json:"result"`
-	Error   RpcError `json:"error"`
+	Jsonrpc string                 `json:"jsonrpc"`
+	Id      int32                  `json:"id"`
+	Result  map[string]interface{} `json:"result"`
+	Error   RpcError               `json:"error"`
 }
 
 func DoRpc(targetUrl string, msg string) string {
 	reqBody := bytes.NewBufferString(msg)
-	resp, err := http.Post(targetUrl, "application/json", reqBody)
+	resp, err := http.Post(targetUrl, ContentType, reqBody)
 	if err != nil {
 		fmt.Printf("DoRpc: HttpError, %s\n", err)
 		return ""
@@ -55,7 +55,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	fmt.Printf("%#v\n", req)
 
 	// Forward RPC request to Ether node
-	respBody := DoRpc("http://13.124.160.186:8545", request.Body)
+	respBody := DoRpc(TestnetUrl, request.Body)
 
 	// Relay a response from the node
 	var resp RpcResponse
