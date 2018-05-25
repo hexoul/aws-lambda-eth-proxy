@@ -2,16 +2,18 @@ package web3
 
 import "testing"
 
-func FromWei(number int, unit int) int {
-	return 0
+func TestUnit(t *testing.T) {
+	units := []string{"gwei", "gweii", "abc", "ether"}
+	for _, unit := range units {
+		val := GetValueOfUnit(unit)
+		if val == nil {
+			t.Errorf("There is no unit %s", unit)
+		}
+	}
 }
 
-func ToWei(number int, unit int) int {
-	return 0
+func TestFromWei(t *testing.T) {
 }
 
-func TestFromWei() {
-}
-
-func TestToWei() {
+func TestToWei(t *testing.T) {
 }
