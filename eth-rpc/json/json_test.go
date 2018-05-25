@@ -25,5 +25,4 @@ func TestJson(t *testing.T) {
 	if respRet.Id != 2 {
 		t.Errorf("Failed to parse RpcResponse")
 	}
-
 }

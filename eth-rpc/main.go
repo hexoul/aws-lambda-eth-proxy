@@ -8,27 +8,11 @@ import (
 	"net/http"
 
 	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/json"
+	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/rpc"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
-
-func DoRpc(targetUrl string, msg string) string {
-	reqBody := bytes.NewBufferString(msg)
-	resp, err := http.Post(targetUrl, ContentType, reqBody)
-	if err != nil {
-		fmt.Printf("DoRpc: HttpError, %s\n", err)
-		return ""
-	}
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("DoRpc: IoError, %s\n", err)
-		return ""
-	}
-	ret := string(respBody)
-	resp.Body.Close()
-	return ret
-}
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// Validate RPC request
@@ -36,7 +20,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	fmt.Printf("%#v\n", req)
 
 	// Forward RPC request to Ether node
-	respBody := DoRpc(TestnetUrl, request.Body)
+	respBody := rpc.DoRpc(TestnetUrl, request.Body)
 
 	// Relay a response from the node
 	resp := json.GetRpcResponseFromJson(respBody)

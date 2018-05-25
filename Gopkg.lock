@@ -12,9 +12,15 @@
   revision = "6e2e37798efbb1dfd8e9c6681702e683a6046517"
   version = "v1.0.1"
 
+[[projects]]
+  branch = "master"
+  name = "github.com/hexoul/eth-rpc-on-aws-lambda"
+  packages = ["eth-rpc/json"]
+  revision = "68f141aff8cddcb6becea2363ae5e08daf6c08a4"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3375957ebac467c0b60004a3901209363670a2ee730d5474c3d1ad1b121325bd"
+  inputs-digest = "4bba3c0e162fee1335659facb7243761544f5c5e004133f76b689472a2205ff7"
   solver-name = "gps-cdcl"
   solver-version = 1
