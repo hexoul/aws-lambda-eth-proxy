@@ -1,6 +1,8 @@
 package common
 
-var UnitMap = map[string]string{
+import "math/big"
+
+var UnitStrMap = map[string]string{
 	"noether":    "0",
 	"wei":        "1",
 	"kwei":       "1000",
@@ -28,4 +30,34 @@ var UnitMap = map[string]string{
 	"mether":     "1000000000000000000000000",
 	"gether":     "1000000000000000000000000000",
 	"tether":     "1000000000000000000000000000000",
+}
+
+var UnitMap = map[string]*big.Int{
+	"noether":    big.NewInt(0),
+	"wei":        big.NewInt(1),
+	"kwei":       big.NewInt(1000),
+	"Kwei":       big.NewInt(1000),
+	"babbage":    big.NewInt(1000),
+	"femtoether": big.NewInt(1000),
+	"mwei":       big.NewInt(1000000),
+	"Mwei":       big.NewInt(1000000),
+	"lovelace":   big.NewInt(1000000),
+	"picoether":  big.NewInt(1000000),
+	"gwei":       big.NewInt(1000000000),
+	"Gwei":       big.NewInt(1000000000),
+	"shannon":    big.NewInt(1000000000),
+	"nanoether":  big.NewInt(1000000000),
+	"nano":       big.NewInt(1000000000),
+	"szabo":      big.NewInt(1000000000000),
+	"microether": big.NewInt(1000000000000),
+	"micro":      big.NewInt(1000000000000),
+	"finney":     big.NewInt(1000000000000000),
+	"milliether": big.NewInt(1000000000000000),
+	"milli":      big.NewInt(1000000000000000),
+	"ether":      big.NewInt(1000000000000000000),
+	"kether":     big.NewInt(-1), // Manual calculation is needed from here
+	"grand":      big.NewInt(-1),
+	"mether":     big.NewInt(-1),
+	"gether":     big.NewInt(-1),
+	"tether":     big.NewInt(-1),
 }

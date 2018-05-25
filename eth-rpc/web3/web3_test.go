@@ -5,9 +5,9 @@ import "testing"
 func TestUnit(t *testing.T) {
 	units := []string{"gwei", "gweii", "abc", "ether"}
 	for _, unit := range units {
-		val := GetValueOfUnit(unit)
+		val, err := GetValueOfUnit(unit)
 		if val == nil {
-			t.Errorf("There is no unit %s", unit)
+			t.Errorf("%s %s", err, unit)
 		}
 	}
 }
