@@ -1,14 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 
-	"./rpc"
 	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/json"
+	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/rpc"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -20,7 +17,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	fmt.Printf("%#v\n", req)
 
 	// Forward RPC request to Ether node
-	respBody := rpc.DoRpc(TestnetUrl, request.Body)
+	respBody := rpc.DoRpc(rpc.TestnetUrl, request.Body)
 
 	// Relay a response from the node
 	resp := json.GetRpcResponseFromJson(respBody)
