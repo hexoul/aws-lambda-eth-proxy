@@ -7,8 +7,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"./rpc"
 	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/json"
-	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/rpc"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
