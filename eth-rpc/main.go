@@ -32,14 +32,14 @@ func DoRpc(targetUrl string, msg string) string {
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// Validate RPC request
-	req := GetRpcRequestFromJson(request.Body)
+	req := json.GetRpcRequestFromJson(request.Body)
 	fmt.Printf("%#v\n", req)
 
 	// Forward RPC request to Ether node
 	respBody := DoRpc(TestnetUrl, request.Body)
 
 	// Relay a response from the node
-	resp := GetRpcResponse(respBody)
+	resp := json.GetRpcResponseFromJson(respBody)
 	fmt.Printf("%#v\n", resp)
 	retCode := 200
 	if resp.Error.Code != 0 {
