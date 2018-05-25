@@ -1,6 +1,7 @@
 package web3
 
 import (
+	"fmt"
 	"math/big"
 
 	etherCommon "github.com/ethereum/go-ethereum/common"
@@ -18,18 +19,21 @@ func GetValueOfUnit(unit string) (val *big.Int, err string) {
 	return
 }
 
-func FromWei(number int, unit int) int {
-	/*
-		ret := new(big.Int)
-		ret, err := ret.SetString(valStr, 10)
-		if !err {
-			fmt.Println("Failed to get big from string")
-			return nil
-		}
-	*/
-	return 0
+func FromWei(number string, unit string) (ret string) {
+	var err bool
+	val := new(big.Int)
+	if number[:2] == "0x" {
+		_, err = val.SetString(number, 16)
+	} else {
+		_, err = val.SetString(number, 10)
+	}
+
+	if !err {
+		fmt.Println("Failed to convert number")
+	}
+	return
 }
 
-func ToWei(number int, unit int) int {
-	return 0
+func ToWei(number string, unit string) (ret string) {
+	return
 }

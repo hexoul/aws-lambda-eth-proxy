@@ -13,6 +13,7 @@ func TestUnit(t *testing.T) {
 }
 
 func TestFromWei(t *testing.T) {
+	FromWei("1234567890000", "ether")
 }
 
 func TestToWei(t *testing.T) {
