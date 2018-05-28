@@ -1,5 +1,6 @@
 # Ethereum JSON-RPC on AWS Lambda
 AWS Lambda code to call and relay JSON-RPC of ethereum written in Golang
+Even this project try porting web3 to Golang
 
 # Usage
 1. Build
@@ -18,3 +19,8 @@ make
 ```shell
 go test -v
 ```
+
+# Reference
+[1] https://github.com/aws/aws-lambda-go
+
+[2] https://github.com/ethereum/go-ethereum
