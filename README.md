@@ -24,3 +24,8 @@ go test -v
 [1] https://github.com/aws/aws-lambda-go
 
 [2] https://github.com/ethereum/go-ethereum
+
+[3] https://github.com/ipfs/go-ipfs-api
+
+# License
+MIT
