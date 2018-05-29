@@ -28,7 +28,9 @@ go test -v
 
 [2] https://github.com/ethereum/go-ethereum
 
-[3] https://github.com/ipfs/go-ipfs-api
+[3] https://ipfs.io/
+
+[4] https://github.com/ipfs/go-ipfs-api
 
 # License
 MIT
