@@ -18,10 +18,10 @@ const (
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// Validate RPC request
 	req := json.GetRpcRequestFromJson(request.Body)
-	if request.QueryStringParameters[PARAM_FUNC_NAME] != "" {
-		req.Method = request.QueryStringParameters[PARAM_FUNC_NAME]
-	} else if request.PathParameters[PARAM_FUNC_NAME] != "" {
-		req.Method = request.PathParameters[PARAM_FUNC_NAME]
+	if method := request.QueryStringParameters[PARAM_FUNC_NAME]; method != "" {
+		req.Method = method
+	} else if method := request.PathParameters[PARAM_FUNC_NAME]; method != "" {
+		req.Method = method
 	}
 	fmt.Printf("RpcRequest: %#v\n", req)
 

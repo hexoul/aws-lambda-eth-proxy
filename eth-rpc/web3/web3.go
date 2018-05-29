@@ -31,6 +31,12 @@ func FromWei(number string, unit string) (ret string) {
 	if !err {
 		fmt.Println("Failed to convert number")
 	}
+
+	/*
+		TODO:
+		when number overflow, split to upper and lower bits, convert each bits, combine
+		otherwise, just divide number
+	*/
 	return
 }
 
