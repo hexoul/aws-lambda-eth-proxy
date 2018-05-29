@@ -10,7 +10,7 @@ import (
 	ethjson "github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/json"
 )
 
-func DoRpc(targetUrl string, req interface{}) string {
+func DoRpc(url string, req interface{}) (ret string) {
 	// Validate request type
 	var msg string
 	switch req.(type) {
@@ -23,22 +23,22 @@ func DoRpc(targetUrl string, req interface{}) string {
 			break
 		}
 	default:
-		return ""
+		return
 	}
 
 	// HTTP request
 	reqBody := bytes.NewBufferString(msg)
-	resp, err := http.Post(targetUrl, ContentType, reqBody)
+	resp, err := http.Post(url, ContentType, reqBody)
 	if err != nil {
 		fmt.Printf("DoRpc: HttpError, %s\n", err)
-		return ""
+		return
 	}
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("DoRpc: IoError, %s\n", err)
-		return ""
+		return
 	}
-	ret := string(respBody)
+	ret = string(respBody)
 	resp.Body.Close()
-	return ret
+	return
 }

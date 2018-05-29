@@ -29,6 +29,12 @@
   revision = "bc0944904505aab55e089371a892be2f87883161"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/cheekybits/is"
+  packages = ["."]
+  revision = "68e9c0620927fb5427fda3708222d0edee89eae9"
+
+[[projects]]
   name = "github.com/ethereum/go-ethereum"
   packages = [
     "common",
@@ -176,6 +182,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2b744177257a7e3d84ba5cdd3399149e8c057edc9acac02c167fa392f58fe189"
+  inputs-digest = "f91005538b3f9a897292b8df60a65e26d0068a0a547710efe456085b1280fb3f"
   solver-name = "gps-cdcl"
   solver-version = 1
