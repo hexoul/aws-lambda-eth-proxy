@@ -23,14 +23,14 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	} else if request.PathParameters[PARAM_FUNC_NAME] != "" {
 		req.Method = request.PathParameters[PARAM_FUNC_NAME]
 	}
-	fmt.Printf("%#v\n", req)
+	fmt.Printf("RpcRequest: %#v\n", req)
 
 	// Forward RPC request to Ether node
-	respBody := rpc.DoRpc(rpc.TestnetUrl, request.Body)
+	respBody := rpc.DoRpc(rpc.TestnetUrl, req)
 
 	// Relay a response from the node
 	resp := json.GetRpcResponseFromJson(respBody)
-	fmt.Printf("%#v\n", resp)
+	fmt.Printf("RpcResponse: %#v\n", resp)
 	retCode := 200
 	if resp.Error.Code != 0 {
 		retCode = 400

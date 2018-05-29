@@ -2,12 +2,31 @@ package rpc
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	ethjson "github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/json"
 )
 
-func DoRpc(targetUrl string, msg string) string {
+func DoRpc(targetUrl string, req interface{}) string {
+	// Validate request type
+	var msg string
+	switch req.(type) {
+	case string:
+		msg, _ = req.(string)
+		break
+	case ethjson.RpcRequest:
+		if ret, err := json.Marshal(req); err == nil {
+			msg = string(ret)
+			break
+		}
+	default:
+		return ""
+	}
+
+	// HTTP request
 	reqBody := bytes.NewBufferString(msg)
 	resp, err := http.Post(targetUrl, ContentType, reqBody)
 	if err != nil {
