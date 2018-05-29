@@ -32,7 +32,7 @@ var UnitStrMap = map[string]string{
 	"tether":     "1000000000000000000000000000000",
 }
 
-var UnitMap = map[string]*big.Int{
+var UnitIntMap = map[string]*big.Int{
 	"noether":    big.NewInt(0),
 	"wei":        big.NewInt(1),
 	"kwei":       big.NewInt(1000),
@@ -60,4 +60,34 @@ var UnitMap = map[string]*big.Int{
 	"mether":     big.NewInt(-1),
 	"gether":     big.NewInt(-1),
 	"tether":     big.NewInt(-1),
+}
+
+var UnitFloatMap = map[string]*big.Float{
+	"noether":    big.NewFloat(0),
+	"wei":        big.NewFloat(1),
+	"kwei":       big.NewFloat(1000),
+	"Kwei":       big.NewFloat(1000),
+	"babbage":    big.NewFloat(1000),
+	"femtoether": big.NewFloat(1000),
+	"mwei":       big.NewFloat(1000000),
+	"Mwei":       big.NewFloat(1000000),
+	"lovelace":   big.NewFloat(1000000),
+	"picoether":  big.NewFloat(1000000),
+	"gwei":       big.NewFloat(1000000000),
+	"Gwei":       big.NewFloat(1000000000),
+	"shannon":    big.NewFloat(1000000000),
+	"nanoether":  big.NewFloat(1000000000),
+	"nano":       big.NewFloat(1000000000),
+	"szabo":      big.NewFloat(1000000000000),
+	"microether": big.NewFloat(1000000000000),
+	"micro":      big.NewFloat(1000000000000),
+	"finney":     big.NewFloat(1000000000000000),
+	"milliether": big.NewFloat(1000000000000000),
+	"milli":      big.NewFloat(1000000000000000),
+	"ether":      big.NewFloat(1000000000000000000),
+	"kether":     big.NewFloat(1000000000000000000000),
+	"grand":      big.NewFloat(1000000000000000000000),
+	"mether":     big.NewFloat(1000000000000000000000000),
+	"gether":     big.NewFloat(1000000000000000000000000000),
+	"tether":     big.NewFloat(1000000000000000000000000000000),
 }
