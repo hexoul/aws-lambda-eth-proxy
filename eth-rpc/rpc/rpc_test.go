@@ -8,16 +8,16 @@ import (
 
 func TestRpc(t *testing.T) {
 	testMsg := "{\"jsonrpc\":\"2.0\",\"method\":\"web3_clientVersion\",\"params\":[\"a\",1],\"id\":100}"
-	targetUrl := "http://13.124.160.186:8545"
 
+	r := New(Testnet)
 	// Test with string param
-	if respBody := DoRpc(targetUrl, testMsg); len(respBody) == 0 {
+	if respBody := r.DoRpc(testMsg); len(respBody) == 0 {
 		t.Errorf("Failed to RPC with string")
 	}
 
 	// Test with RpcRequest param
 	testRpcRequest := json.GetRpcRequestFromJson(testMsg)
-	if respBody := DoRpc(targetUrl, testRpcRequest); len(respBody) == 0 {
+	if respBody := r.DoRpc(testRpcRequest); len(respBody) == 0 {
 		t.Errorf("Failed to RPC with RpcRequest")
 	}
 }

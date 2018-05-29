@@ -5,12 +5,44 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 
 	ethjson "github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/json"
 )
 
-func DoRpc(url string, req interface{}) (ret string) {
+type Rpc struct {
+	netType string
+}
+
+const (
+	Mainnet = "MAIN"
+	Testnet = "TEST"
+)
+
+// mode is MAINNET or TESTNET
+func New(_netType string) *Rpc {
+	return &Rpc{
+		netType: _netType,
+	}
+}
+
+func (r *Rpc) getUrl() (url string) {
+	switch r.netType {
+	case Mainnet:
+		url = MainnetUrls[rand.Intn(len(MainnetUrls))]
+		break
+	case Testnet:
+		url = TestnetUrls[rand.Intn(len(TestnetUrls))]
+		break
+	}
+	return
+}
+
+func (r *Rpc) DoRpc(req interface{}) (ret string) {
+	// Get url following netType
+	url := r.getUrl()
+
 	// Validate request type
 	var msg string
 	switch req.(type) {

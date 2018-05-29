@@ -12,21 +12,21 @@ import (
 )
 
 const (
-	paramFuncName = "func"
+	ParamFuncName = "func"
 )
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// Validate RPC request
 	req := json.GetRpcRequestFromJson(request.Body)
-	if method := request.QueryStringParameters[paramFuncName]; method != "" {
+	if method := request.QueryStringParameters[ParamFuncName]; method != "" {
 		req.Method = method
-	} else if method := request.PathParameters[paramFuncName]; method != "" {
+	} else if method := request.PathParameters[ParamFuncName]; method != "" {
 		req.Method = method
 	}
 	fmt.Printf("RpcRequest: %#v\n", req)
 
 	// Forward RPC request to Ether node
-	respBody := rpc.DoRpc(rpc.TestnetUrl, req)
+	respBody := rpc.New(rpc.Testnet).DoRpc(req)
 
 	// Relay a response from the node
 	resp := json.GetRpcResponseFromJson(respBody)
