@@ -11,9 +11,18 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
+const (
+	PARAM_FUNC_NAME = "func"
+)
+
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// Validate RPC request
 	req := json.GetRpcRequestFromJson(request.Body)
+	if request.QueryStringParameters[PARAM_FUNC_NAME] != "" {
+		req.Method = request.QueryStringParameters[PARAM_FUNC_NAME]
+	} else if request.PathParameters[PARAM_FUNC_NAME] != "" {
+		req.Method = request.PathParameters[PARAM_FUNC_NAME]
+	}
 	fmt.Printf("%#v\n", req)
 
 	// Forward RPC request to Ether node
