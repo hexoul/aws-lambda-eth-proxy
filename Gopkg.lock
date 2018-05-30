@@ -35,6 +35,20 @@
   revision = "68e9c0620927fb5427fda3708222d0edee89eae9"
 
 [[projects]]
+  name = "github.com/ethereum/go-ethereum"
+  packages = [
+    "common",
+    "common/hexutil",
+    "common/math",
+    "crypto",
+    "crypto/secp256k1",
+    "crypto/sha3",
+    "rlp"
+  ]
+  revision = "eae63c511ceafab14b92e274c1b18bf1700e2d3d"
+  version = "v1.8.10"
+
+[[projects]]
   name = "github.com/gogo/protobuf"
   packages = ["proto"]
   revision = "1adfc126b41513cc696b209667c8656ea7aac67c"
@@ -172,6 +186,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "db3953b5af94e7e465729ba8b33bbdcc4e7d2b8b1b91d6b53826187e92c3c7bc"
+  inputs-digest = "5dfe42535cb263e69b0a31b2f28defedb9054abdab1a420d8b9b002903325666"
   solver-name = "gps-cdcl"
   solver-version = 1

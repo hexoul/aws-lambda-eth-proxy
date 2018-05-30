@@ -20,7 +20,7 @@ func GetValueOfUnit(unit string) (val *big.Float, err string) {
 }
 
 // Parse number string to big float
-func GetBigFloat(number string) *big.Float {
+func getBigFloat(number string) *big.Float {
 	var err error
 	val := new(big.Float)
 	if number[:2] == "0x" {
@@ -46,7 +46,7 @@ func FromWei(number, unit string) (ret, err string) {
 	}
 
 	// Parse number string to big float
-	val := GetBigFloat(number)
+	val := getBigFloat(number)
 	if val == nil {
 		// TODO: when number overflow, split to upper and lower bits, convert each bits, combine
 		err = "Number is not appropriate for float64"
@@ -69,7 +69,7 @@ func ToWei(number, unit string) (ret, err string) {
 	}
 
 	// Parse number string to big float
-	val := GetBigFloat(number)
+	val := getBigFloat(number)
 	if val == nil {
 		// TODO: when number overflow, split to upper and lower bits, convert each bits, combine
 		err = "Number is not appropriate for float64"
