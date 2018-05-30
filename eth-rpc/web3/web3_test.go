@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/big"
 	"testing"
+
+	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/common"
 )
 
 func TestUnit(t *testing.T) {
@@ -28,16 +30,24 @@ func TestHex(t *testing.T) {
 }
 
 func TestFromWei(t *testing.T) {
-	ret := FromWei("1234000000000000000", "ether")
-	if ret == "" || ret[:5] != "1.234" {
+	ret, err := FromWei("1234000000000000000", "ether")
+	t.Logf("%s", ret)
+	if err != "" || ret == "" || ret[:5] != "1.234" {
 		t.Errorf("Failed to FromWei %s", ret)
 	}
 
-	ret = FromWei("1234000000000000000000000", "ether")
-	if ret == "" || ret[:4] != "1234" {
+	ret, err = FromWei("1234000000000000000000000", "ether")
+	t.Logf("%s", ret)
+	if err != "" || ret == "" || ret[:4] != "1234" {
 		t.Errorf("Failed to FromWei %s", ret)
 	}
 }
 
 func TestToWei(t *testing.T) {
+	unit := common.UnitStrMap["ether"]
+	ret, err := ToWei("1234", "ether")
+	t.Logf("%s", ret)
+	if err != "" || ret == "" || (len(unit)+3) != len(ret) || ret[:4] != "1234" {
+		t.Errorf("Failed to ToWei %s", ret)
+	}
 }
