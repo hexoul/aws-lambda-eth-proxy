@@ -5,7 +5,7 @@ In addition, this project try porting web3 to Golang.
 
 Furthermore IPFS will be applied to this project to maximize service utility by supporting token development.
 
-# Usage
+# Build
 1. Build
 ```shell
 cd $GOPATH/src/{repo}/eth-rpc
@@ -22,6 +22,11 @@ make
 ```shell
 go test -v
 ```
+
+# Usage
+1. JSON-RPC relay
+2. Ecrecover
+3. ...
 
 # Reference
 [1] https://github.com/aws/aws-lambda-go
