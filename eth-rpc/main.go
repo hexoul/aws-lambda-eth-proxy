@@ -29,16 +29,22 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	respBody, err := rpc.New(rpc.Testnet).DoRpc(req)
 
 	// Relay a response from the node
+	var errMsg error
 	resp := json.GetRpcResponseFromJson(respBody)
 	fmt.Printf("RpcResponse: %#v\n", resp)
 	retCode := 200
 	if err != nil {
-		respBody = err.Error()
+		// In case of server-side RPC fail
+		errMsg = err
+		resp.Error.Message = err.Error()
+		respBody = resp.String()
 		retCode = 400
 	} else if resp.Error.Code != 0 {
+		// In case of ether-node-side RPC fail
+		errMsg = fmt.Errorf(resp.Error.Message)
 		retCode = 400
 	}
-	return events.APIGatewayProxyResponse{Body: respBody, StatusCode: retCode}, nil
+	return events.APIGatewayProxyResponse{Body: respBody, StatusCode: retCode}, errMsg
 }
 
 func main() {
