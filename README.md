@@ -5,16 +5,12 @@ In addition, this project try porting web3 to Golang.
 
 Furthermore IPFS will be applied to this project to maximize service utility by supporting token development.
 
-# Usage
-1. Build
+# Build
 ```shell
 cd $GOPATH/src/{repo}/eth-rpc
 go get
 make
 ```
-2. Setting Lambda on AWS with binary file in $GOPATH/src/{repo}/eth-rpc/bin
-3. Setting API Gateway as proxy on AWS
-4. Link between Lambda and API Gateway
 
 # Test
 1. Move each module directory such as json, rpc and so on
@@ -22,6 +18,21 @@ make
 ```shell
 go test -v
 ```
+
+# Deploy
+1. Set Lambda on AWS
+  - Function package: compressed binary file in $GOPATH/src/{repo}/eth-rpc/bin
+  - Handler: eth-rpc (binary file name, it is optional)
+  - Runtime: Go 1.x
+2. Set API Gateway as proxy on AWS
+3. Add API Gateway as Lambda trigger
+4. Add CloudWatch Logs
+5. Check logs at CloudWatch console
+
+# Usage
+1. JSON-RPC relay
+2. Ecrecover
+3. ...
 
 # Reference
 [1] https://github.com/aws/aws-lambda-go
