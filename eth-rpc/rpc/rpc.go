@@ -40,7 +40,7 @@ func (r *Rpc) getUrl() (url string) {
 }
 
 // TODO: Retry when fail, give penalty to low-latency node
-func (r *Rpc) DoRpc(req interface{}) (ret string) {
+func (r *Rpc) DoRpc(req interface{}) (string, error) {
 	// Get url following netType
 	url := r.getUrl()
 
@@ -56,22 +56,20 @@ func (r *Rpc) DoRpc(req interface{}) (ret string) {
 			break
 		}
 	default:
-		return
+		return "", fmt.Errorf("Invalid req type")
 	}
 
 	// HTTP request
 	reqBody := bytes.NewBufferString(msg)
 	resp, err := http.Post(url, ContentType, reqBody)
 	if err != nil {
-		fmt.Printf("DoRpc: HttpError, %s\n", err)
-		return
+		return "", fmt.Errorf("HttpError, %s\n", err)
 	}
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("DoRpc: IoError, %s\n", err)
-		return
+		return "", fmt.Errorf("IoError, %s\n", err)
 	}
-	ret = string(respBody)
+	ret := string(respBody)
 	resp.Body.Close()
-	return
+	return ret, nil
 }
