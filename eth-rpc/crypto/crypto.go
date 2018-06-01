@@ -3,10 +3,36 @@ package crypto
 import (
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/common"
+	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/db"
+
+	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 )
+
+func getPrivKeyFromDB(propVal string) string {
+	//dbHelper := db.New("ap-northeast-2")
+	dbHelper := db.New("aws-region")
+	if dbHelper == nil {
+		return ""
+	}
+
+	ret := dbHelper.GetItem(config.DbConfigTblName, config.DbConfigPropName, propVal, config.DbConfigValName)
+	item := common.DbConfigResult{}
+	for _, elem := range ret.Items {
+		dbHelper.UnmarshalMap(elem, &item)
+		return item.Value
+	}
+	return ""
+}
+
+func Sign() {
+	privKey := getPrivKeyFromDB("priv_key1")
+	if privKey == "" {
+		return
+	}
+}
 
 // signHash is a helper function that calculates a hash for the given message that can be
 // safely used to calculate a signature from.
@@ -54,6 +80,6 @@ func EcRecoverToPubkey(hash, sig string) ([]byte, error) {
 	return crypto.Ecrecover(hexutil.MustDecode(hash), hexutil.MustDecode(sig))
 }
 
-func PubkeyToAddress(p []byte) common.Address {
-	return common.BytesToAddress(crypto.Keccak256(p[1:])[12:])
+func PubkeyToAddress(p []byte) ethcommon.Address {
+	return ethcommon.BytesToAddress(crypto.Keccak256(p[1:])[12:])
 }
