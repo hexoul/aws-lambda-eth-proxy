@@ -23,6 +23,43 @@
   version = "v1.0.1"
 
 [[projects]]
+  name = "github.com/aws/aws-sdk-go"
+  packages = [
+    "aws",
+    "aws/awserr",
+    "aws/awsutil",
+    "aws/client",
+    "aws/client/metadata",
+    "aws/corehandlers",
+    "aws/credentials",
+    "aws/credentials/ec2rolecreds",
+    "aws/credentials/endpointcreds",
+    "aws/credentials/stscreds",
+    "aws/defaults",
+    "aws/ec2metadata",
+    "aws/endpoints",
+    "aws/request",
+    "aws/session",
+    "aws/signer/v4",
+    "internal/sdkio",
+    "internal/sdkrand",
+    "internal/shareddefaults",
+    "private/protocol",
+    "private/protocol/json/jsonutil",
+    "private/protocol/jsonrpc",
+    "private/protocol/query",
+    "private/protocol/query/queryutil",
+    "private/protocol/rest",
+    "private/protocol/xml/xmlutil",
+    "service/dynamodb",
+    "service/dynamodb/dynamodbattribute",
+    "service/dynamodb/expression",
+    "service/sts"
+  ]
+  revision = "827e7eac8c2680d5bdea7bc3ef29c596eabe1eae"
+  version = "v1.13.59"
+
+[[projects]]
   branch = "master"
   name = "github.com/btcsuite/btcd"
   packages = ["btcec"]
@@ -47,6 +84,12 @@
   ]
   revision = "eae63c511ceafab14b92e274c1b18bf1700e2d3d"
   version = "v1.8.10"
+
+[[projects]]
+  name = "github.com/go-ini/ini"
+  packages = ["."]
+  revision = "06f5f3d67269ccec1fe5fe4134ba6e982984f7f5"
+  version = "v1.37.0"
 
 [[projects]]
   name = "github.com/gogo/protobuf"
@@ -76,6 +119,11 @@
     "writer"
   ]
   revision = "b9df188d0fae32d69c1a519fa81741668a12f55a"
+
+[[projects]]
+  name = "github.com/jmespath/go-jmespath"
+  packages = ["."]
+  revision = "0b12d6b5"
 
 [[projects]]
   branch = "master"
@@ -186,6 +234,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5dfe42535cb263e69b0a31b2f28defedb9054abdab1a420d8b9b002903325666"
+  inputs-digest = "fa66a0a980ed7a037015ca19f04320f0fa9c26a8d47a9e6c925db70bc9542637"
   solver-name = "gps-cdcl"
   solver-version = 1
