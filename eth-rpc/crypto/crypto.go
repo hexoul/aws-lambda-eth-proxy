@@ -50,7 +50,7 @@ func EcRecover(dataStr, sigStr string) (string, error) {
 	return fmt.Sprintf("0x%x", recoveredAddr), nil
 }
 
-func EcRecoverPubkey(hash, sig string) ([]byte, error) {
+func EcRecoverToPubkey(hash, sig string) ([]byte, error) {
 	return crypto.Ecrecover(hexutil.MustDecode(hash), hexutil.MustDecode(sig))
 }
 
