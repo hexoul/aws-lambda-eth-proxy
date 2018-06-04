@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/json"
 	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/rpc"
@@ -16,6 +17,7 @@ const (
 )
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	fmt.Printf("Region: %s", os.Getenv("AWS_DEFAULT_REGION"))
 	// Validate RPC request
 	req := json.GetRpcRequestFromJson(request.Body)
 	if method := request.QueryStringParameters[ParamFuncName]; method != "" {

@@ -2,6 +2,8 @@ package db
 
 import (
 	"fmt"
+	"os"
+	"sync"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -15,8 +17,27 @@ type DbHelper struct {
 	client *dynamodb.DynamoDB
 }
 
+// For singleton
+var instance *DbHelper
+var once sync.Once
+
+func GetInstance(region string) *DbHelper {
+	once.Do(func() {
+		instance = New(region)
+	})
+	return instance
+}
+
 func New(region string) *DbHelper {
+	// Check if instance is already assigned
+	if instance != nil {
+		return instance
+	}
+
 	// Create AWS session
+	if region == "" {
+		region = os.Getenv("AWS_DEFAULT_REGION")
+	}
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(region),
 	},
@@ -33,10 +54,12 @@ func New(region string) *DbHelper {
 		return nil
 	}
 
-	return &DbHelper{
+	// Assign
+	instance = &DbHelper{
 		Region: region,
 		client: svc,
 	}
+	return instance
 }
 
 func (d *DbHelper) ListTables() {

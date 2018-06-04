@@ -12,8 +12,8 @@ import (
 )
 
 func getPrivKeyFromDB(propVal string) string {
-	//dbHelper := db.New("ap-northeast-2")
-	dbHelper := db.New("aws-region")
+	//dbHelper := db.GetInstance("aws-region")
+	dbHelper := db.GetInstance("ap-northeast-2")
 	if dbHelper == nil {
 		return ""
 	}
@@ -28,7 +28,7 @@ func getPrivKeyFromDB(propVal string) string {
 }
 
 func Sign() {
-	privKey := getPrivKeyFromDB("priv_key1")
+	privKey := getPrivKeyFromDB("priv_key")
 	if privKey == "" {
 		return
 	}
