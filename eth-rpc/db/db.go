@@ -21,6 +21,8 @@ type DbHelper struct {
 var instance *DbHelper
 var once sync.Once
 
+// region is blank or aws-region such as ap-northeast-2
+// In case of blank, use AWS_DEFAULT_REGION as region
 func GetInstance(region string) *DbHelper {
 	once.Do(func() {
 		instance = New(region)

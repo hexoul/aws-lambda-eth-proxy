@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 
+	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/crypto"
 	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/json"
 	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/rpc"
 
@@ -17,7 +17,10 @@ const (
 )
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	fmt.Printf("Region: %s", os.Getenv("AWS_DEFAULT_REGION"))
+	if method := request.PathParameters[ParamFuncName]; method == "dbtest" {
+		crypto.GetInstance()
+	}
+
 	// Validate RPC request
 	req := json.GetRpcRequestFromJson(request.Body)
 	if method := request.QueryStringParameters[ParamFuncName]; method != "" {
@@ -43,7 +46,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		retCode = 400
 	} else if resp.Error.Code != 0 {
 		// In case of ether-node-side RPC fail
-		errMsg = fmt.Errorf(resp.Error.Message)
+		errMsg = fmt.Errorf("%s", resp.Error.Message)
 		retCode = 400
 	}
 	return events.APIGatewayProxyResponse{Body: respBody, StatusCode: retCode}, errMsg
