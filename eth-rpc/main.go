@@ -18,7 +18,9 @@ const (
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	if method := request.PathParameters[ParamFuncName]; method == "dbtest" {
-		crypto.GetInstance()
+		c := crypto.GetInstance()
+		c.Print()
+		return events.APIGatewayProxyResponse{Body: "dbtest", StatusCode: 200}, nil
 	}
 
 	// Validate RPC request
@@ -34,22 +36,19 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	respBody, err := rpc.New(rpc.Testnet).DoRpc(req)
 
 	// Relay a response from the node
-	var errMsg error
 	resp := json.GetRpcResponseFromJson(respBody)
 	fmt.Printf("RpcResponse: %#v\n", resp)
 	retCode := 200
 	if err != nil {
 		// In case of server-side RPC fail
-		errMsg = err
 		resp.Error.Message = err.Error()
 		respBody = resp.String()
 		retCode = 400
 	} else if resp.Error.Code != 0 {
 		// In case of ether-node-side RPC fail
-		errMsg = fmt.Errorf("%s", resp.Error.Message)
 		retCode = 400
 	}
-	return events.APIGatewayProxyResponse{Body: respBody, StatusCode: retCode}, errMsg
+	return events.APIGatewayProxyResponse{Body: respBody, StatusCode: retCode}, nil
 }
 
 func main() {

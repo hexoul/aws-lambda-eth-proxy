@@ -42,10 +42,6 @@ func GetInstance() *Crypto {
 		bNonce, _ := hex.DecodeString(dbNonce)
 		nPrivKey := DecryptAes(dbPrivKey, dbSecretKey, bNonce)
 
-		fmt.Println(dbSecretKey)
-		fmt.Println(dbNonce)
-		fmt.Println(nPrivKey)
-
 		instance = &Crypto{
 			secretKey: dbSecretKey,
 			nonce:     dbNonce,
@@ -53,6 +49,13 @@ func GetInstance() *Crypto {
 		}
 	})
 	return instance
+}
+
+// TODO: It is function for test, SHOULD BE DELETED
+func (c *Crypto) Print() {
+	fmt.Println(c.secretKey)
+	fmt.Println(c.nonce)
+	fmt.Println(c.privKey)
 }
 
 func getPrivKeyFromDB(propVal string) string {

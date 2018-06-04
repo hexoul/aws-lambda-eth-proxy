@@ -32,14 +32,12 @@ func TestAes(t *testing.T) {
 	secretKey := "6368616e676520746869732070617373776f726420746f206120736563726574"
 	text := "abcde"
 	cipher, nonce := EncryptAes(text, secretKey, "")
-	t.Logf("nonce %x", nonce)
 	ret := DecryptAes(cipher, secretKey, nonce)
 	if text != ret {
 		t.Errorf("Failed to decrypt")
 	}
 
 	cipher, nonce = EncryptAes(text, secretKey, "cd2e39750409adc5f8299c4b")
-	t.Logf("nonce %x", nonce)
 	ret = DecryptAes(cipher, secretKey, nonce)
 	if text != ret {
 		t.Errorf("Failed to decrypt")
