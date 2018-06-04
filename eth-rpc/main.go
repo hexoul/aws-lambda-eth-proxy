@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/crypto"
+	_ "github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/crypto"
 	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/json"
 	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/rpc"
 
@@ -17,12 +17,6 @@ const (
 )
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	if method := request.PathParameters[ParamFuncName]; method == "dbtest" {
-		c := crypto.GetInstance()
-		c.Print()
-		return events.APIGatewayProxyResponse{Body: "dbtest", StatusCode: 200}, nil
-	}
-
 	// Validate RPC request
 	req := json.GetRpcRequestFromJson(request.Body)
 	if method := request.QueryStringParameters[ParamFuncName]; method != "" {

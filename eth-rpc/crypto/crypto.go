@@ -35,9 +35,9 @@ const (
 
 func GetInstance() *Crypto {
 	once.Do(func() {
-		dbSecretKey := getPrivKeyFromDB(DbSecretKeyPropName)
-		dbNonce := getPrivKeyFromDB(DbNoncePropName)
-		dbPrivKey := getPrivKeyFromDB(DbPrivKeyPropName)
+		dbSecretKey := getConfigFromDB(DbSecretKeyPropName)
+		dbNonce := getConfigFromDB(DbNoncePropName)
+		dbPrivKey := getConfigFromDB(DbPrivKeyPropName)
 
 		bNonce, _ := hex.DecodeString(dbNonce)
 		nPrivKey := DecryptAes(dbPrivKey, dbSecretKey, bNonce)
@@ -51,14 +51,13 @@ func GetInstance() *Crypto {
 	return instance
 }
 
-// TODO: It is function for test, SHOULD BE DELETED
-func (c *Crypto) Print() {
-	fmt.Println(c.secretKey)
-	fmt.Println(c.nonce)
-	fmt.Println(c.privKey)
+func (c *Crypto) Sign() {
+	if c.privKey == "" {
+		return
+	}
 }
 
-func getPrivKeyFromDB(propVal string) string {
+func getConfigFromDB(propVal string) string {
 	//dbHelper := db.GetInstance("aws-region")
 	dbHelper := db.GetInstance("")
 	if dbHelper == nil {
@@ -72,13 +71,6 @@ func getPrivKeyFromDB(propVal string) string {
 		return item.Value
 	}
 	return ""
-}
-
-func Sign() {
-	privKey := getPrivKeyFromDB("priv_key")
-	if privKey == "" {
-		return
-	}
 }
 
 // signHash is a helper function that calculates a hash for the given message that can be
