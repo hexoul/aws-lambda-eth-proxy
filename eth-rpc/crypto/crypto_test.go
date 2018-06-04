@@ -2,6 +2,8 @@ package crypto
 
 import (
 	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -25,6 +27,32 @@ var (
 	testsigraw3 = "0xfb7e213c96e8445737c7fc15cc3674553a4a0c9e4e861e32ad8edbffdae61b1c08aa6bd56db69db045a0778f828e5fb5b41a461fdf2b06a576229784b345eb5b1b"
 	testaddr    = "0xd396348325532a21ab2b01aeee1499a713453e7c"
 )
+
+func TestAes(t *testing.T) {
+	secretKey := "6368616e676520746869732070617373776f726420746f206120736563726574"
+	text := "abcde"
+	cipher, nonce := EncryptAes(text, secretKey, "")
+	t.Logf("nonce %x", nonce)
+	ret := DecryptAes(cipher, secretKey, nonce)
+	if text != ret {
+		t.Errorf("Failed to decrypt")
+	}
+
+	cipher, nonce = EncryptAes(text, secretKey, "cd2e39750409adc5f8299c4b")
+	t.Logf("nonce %x", nonce)
+	ret = DecryptAes(cipher, secretKey, nonce)
+	if text != ret {
+		t.Errorf("Failed to decrypt")
+	}
+}
+
+func TestMd5(t *testing.T) {
+	text := "abcde"
+	hasher := md5.New()
+	hasher.Write([]byte(text))
+	ret := hex.EncodeToString(hasher.Sum(nil))
+	t.Logf("%s", ret)
+}
 
 func TestEcRecoverPubkey(t *testing.T) {
 	pubkey, err := crypto.Ecrecover(testmsg, testsig)
