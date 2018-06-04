@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/common"
 	"github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/db"
@@ -16,64 +17,47 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-func EncryptAes(text, keyStr, nonceStr string) (string, []byte) {
-	// Load your secret key from a safe place and reuse it across multiple
-	// Seal/Open calls. (Obviously don't use this example key for anything
-	// real.) If you want to convert a passphrase to a key, use a suitable
-	// package like bcrypt or scrypt.
-	// When decoded the key should be 16 bytes (AES-128) or 32 (AES-256).
-	key, _ := hex.DecodeString(keyStr)
-	plaintext := []byte(text)
-
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	// Never use more than 2^32 random nonces with a given key because of the risk of a repeat.
-	var nonce []byte
-	if nonceStr == "" {
-		nonce = make([]byte, 12)
-		if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-			panic(err.Error())
-		}
-	} else {
-		nonce, _ = hex.DecodeString(nonceStr)
-	}
-
-	aesgcm, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	ciphertext := aesgcm.Seal(nil, nonce, plaintext, nil)
-	return hex.EncodeToString(ciphertext), nonce
+type Crypto struct {
+	secretKey string
+	nonce     string
+	privKey   string
 }
 
-func DecryptAes(text, keyStr string, nonce []byte) string {
-	key, _ := hex.DecodeString(keyStr)
-	ciphertext, _ := hex.DecodeString(text)
+// For singleton
+var instance *Crypto
+var once sync.Once
 
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err.Error())
-	}
+const (
+	DbSecretKeyPropName = "secret_key"
+	DbNoncePropName     = "nonce"
+	DbPrivKeyPropName   = "priv_key"
+)
 
-	aesgcm, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
-	}
+func GetInstance() *Crypto {
+	once.Do(func() {
+		dbSecretKey := getPrivKeyFromDB(DbSecretKeyPropName)
+		dbNonce := getPrivKeyFromDB(DbNoncePropName)
+		dbPrivKey := getPrivKeyFromDB(DbPrivKeyPropName)
 
-	plaintext, err := aesgcm.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		panic(err.Error())
-	}
-	return string(plaintext[:])
+		bNonce, _ := hex.DecodeString(dbNonce)
+		nPrivKey := DecryptAes(dbPrivKey, dbSecretKey, bNonce)
+
+		fmt.Println(dbSecretKey)
+		fmt.Println(dbNonce)
+		fmt.Println(nPrivKey)
+
+		instance = &Crypto{
+			secretKey: dbSecretKey,
+			nonce:     dbNonce,
+			privKey:   nPrivKey,
+		}
+	})
+	return instance
 }
 
 func getPrivKeyFromDB(propVal string) string {
 	//dbHelper := db.GetInstance("aws-region")
-	dbHelper := db.GetInstance("ap-northeast-2")
+	dbHelper := db.GetInstance("")
 	if dbHelper == nil {
 		return ""
 	}
@@ -142,4 +126,59 @@ func EcRecoverToPubkey(hash, sig string) ([]byte, error) {
 
 func PubkeyToAddress(p []byte) ethcommon.Address {
 	return ethcommon.BytesToAddress(crypto.Keccak256(p[1:])[12:])
+}
+
+func EncryptAes(text, keyStr, nonceStr string) (string, []byte) {
+	// Load your secret key from a safe place and reuse it across multiple
+	// Seal/Open calls. (Obviously don't use this example key for anything
+	// real.) If you want to convert a passphrase to a key, use a suitable
+	// package like bcrypt or scrypt.
+	// When decoded the key should be 16 bytes (AES-128) or 32 (AES-256).
+	key, _ := hex.DecodeString(keyStr)
+	plaintext := []byte(text)
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// Never use more than 2^32 random nonces with a given key because of the risk of a repeat.
+	var nonce []byte
+	if nonceStr == "" {
+		nonce = make([]byte, 12)
+		if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
+			panic(err.Error())
+		}
+	} else {
+		nonce, _ = hex.DecodeString(nonceStr)
+	}
+
+	aesgcm, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	ciphertext := aesgcm.Seal(nil, nonce, plaintext, nil)
+	return hex.EncodeToString(ciphertext), nonce
+}
+
+func DecryptAes(text, keyStr string, nonce []byte) string {
+	key, _ := hex.DecodeString(keyStr)
+	ciphertext, _ := hex.DecodeString(text)
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	aesgcm, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	plaintext, err := aesgcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		panic(err.Error())
+	}
+	return string(plaintext[:])
 }
