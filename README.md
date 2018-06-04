@@ -17,7 +17,7 @@ Furthermore IPFS will be applied to this project to maximize service utility by 
 
 # Build
 ```shell
-cd $GOPATH/src/{repo}/eth-rpc
+cd $GOPATH/src/{repo start with github.com}
 make
 ```
 
@@ -39,9 +39,11 @@ go test -v
 4. Add CloudWatch Logs
 
 # Usage
-1. JSON-RPC relay
+1. JSON-RPC relay with Ethereum node
 2. Ecrecover
-3. ...
+3. Sign with encrypted private key on DynamoDB
+4. IPFS
+5. fromWei, toWei written in Golang
 
 # Reference
 [1] https://github.com/aws/aws-lambda-go
