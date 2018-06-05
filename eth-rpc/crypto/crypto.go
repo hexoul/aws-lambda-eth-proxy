@@ -52,10 +52,18 @@ func GetInstance() *Crypto {
 	return instance
 }
 
-func (c *Crypto) Sign() {
-	if c.privKey == "" {
-		return
+func (c *Crypto) Sign(msg string) string {
+	sig, err := Sign(msg, c.privKey)
+	if err != nil {
+		return ""
 	}
+	return hex.EncodeToString(sig)
+}
+
+func Sign(msg, privKey string) ([]byte, error) {
+	key, _ := crypto.HexToECDSA(privKey)
+	bMsg := crypto.Keccak256([]byte(msg))
+	return crypto.Sign(bMsg, key)
 }
 
 func getConfigFromDB(propVal string) string {
@@ -102,10 +110,13 @@ func EcRecover(dataStr, sigStr string) (string, error) {
 	if len(sig) != 65 {
 		return "", fmt.Errorf("signature must be 65 bytes long")
 	}
-	if sig[64] != 27 && sig[64] != 28 {
+	if sig[64] == 0 || sig[64] == 1 {
+		// Nothing to do
+	} else if sig[64] == 27 || sig[64] == 28 {
+		sig[64] -= 27 // Transform yellow paper V from 27/28 to 0/1
+	} else {
 		return "", fmt.Errorf("invalid Ethereum signature (V is not 27 or 28)")
 	}
-	sig[64] -= 27 // Transform yellow paper V from 27/28 to 0/1
 
 	rpk, err := crypto.Ecrecover(signHash(data), sig)
 	if err != nil {

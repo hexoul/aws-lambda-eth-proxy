@@ -26,7 +26,23 @@ var (
 	testmsgraw3 = "0xdeadbeaf"
 	testsigraw3 = "0xfb7e213c96e8445737c7fc15cc3674553a4a0c9e4e861e32ad8edbffdae61b1c08aa6bd56db69db045a0778f828e5fb5b41a461fdf2b06a576229784b345eb5b1b"
 	testaddr    = "0xd396348325532a21ab2b01aeee1499a713453e7c"
+
+	testprivhex = "289c2857d4598e37fb9647507e47a309d6133539bf21a8b9cb6df88fd5232032"
+	testaddr2   = "0x06839e455e0a821f946979d99abe8c4dfdd6fe8b"
 )
+
+func TestSign(t *testing.T) {
+	sig, err := Sign(testmsgraw2[2:], testprivhex)
+	if err != nil {
+		t.Errorf("Failed to sign %s", err)
+	}
+	addr, ecErr := EcRecover(testmsgraw2, "0x"+hex.EncodeToString(sig))
+	if ecErr != nil {
+		t.Errorf("Failed to sign, ecrecover error %s", ecErr)
+	} else if addr != testaddr2 {
+		t.Errorf("Failed to sign, ecrecover mismatch have(%s) want(%s)", addr, testaddr2)
+	}
+}
 
 func TestAes(t *testing.T) {
 	secretKey := "6368616e676520746869732070617373776f726420746f206120736563726574"
