@@ -45,6 +45,15 @@ go test -v
 4. IPFS
 5. fromWei, toWei written in Golang
 
+# Documentation
+1. Execute godoc -http like below
+```shell
+godoc -http=:6060
+```
+2. Open url
+  - http://localhost:6060/pkg/github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/
+  - If you change port at 1., it should be applied to url
+
 # Reference
 [1] https://github.com/aws/aws-lambda-go
 
