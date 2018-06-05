@@ -1,3 +1,4 @@
+// IPFS interface
 package ipfs
 
 import (

@@ -1,3 +1,4 @@
+// Common constants such as unit (wei, ether)
 package common
 
 import "math/big"

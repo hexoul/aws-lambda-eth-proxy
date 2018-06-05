@@ -1,3 +1,4 @@
+// JSON parser for request & response body used in JSON-RPC
 package json
 
 import (

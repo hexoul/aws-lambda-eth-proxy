@@ -1,3 +1,4 @@
+// Converted golang layer from web3.js
 package web3
 
 import (

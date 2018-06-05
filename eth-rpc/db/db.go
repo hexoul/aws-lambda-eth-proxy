@@ -1,3 +1,4 @@
+// DB interface for DynamoDB
 package db
 
 import (
@@ -78,12 +79,12 @@ func (d *DbHelper) ListTables() {
 
 // For table named "tblName" in DynamoDB,
 // Scan target value following propName is propVal
-// -----------------------------
-// |  propName  |  targetName  |
-// -----------------------------
-// |  propVal   |  targetVal   |
-// |   ...      |    ...       |
-// -----------------------------
+//   -----------------------------
+//   |  propName  |  targetName  |
+//   -----------------------------
+//   |  propVal   |  targetVal   |
+//   |   ...      |    ...       |
+//   -----------------------------
 func (d *DbHelper) GetItem(tblName, propName, propVal, targetName string) *dynamodb.ScanOutput {
 	/*
 		result, err := d.client.GetItem(&dynamodb.GetItemInput{

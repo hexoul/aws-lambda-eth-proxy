@@ -1,3 +1,4 @@
+// RPC with ethereum node
 package rpc
 
 import (

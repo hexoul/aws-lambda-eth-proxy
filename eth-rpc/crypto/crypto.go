@@ -1,3 +1,4 @@
+// Combined crypto modules for both general(AES, ...) and ethereum(Ecrevoer, sign, ...)
 package crypto
 
 import (
