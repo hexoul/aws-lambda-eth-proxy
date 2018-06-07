@@ -9,6 +9,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethdb"
 	tr "github.com/ethereum/go-ethereum/trie"
@@ -39,7 +40,32 @@ type kv struct {
 	t    bool
 }
 
-func TestProof(t *testing.T) {
+type Transactions struct {
+	hash []common.Hash
+}
+
+// Len returns the length of s.
+func (s Transactions) Len() int { return len(s.hash) }
+
+// GetRlp implements Rlpable and returns the i'th element of s in rlp.
+func (s Transactions) GetRlp(i int) []byte {
+	return s.hash[i].Bytes()
+}
+
+func TestDeriveSha(t *testing.T) {
+	var txs []common.Hash
+	raws := []string{"abc", "123", "def"}
+	for _, raw := range raws {
+		data := crypto.Keccak256([]byte(raw))
+		tx := common.BytesToHash(data)
+		txs = append(txs, tx)
+	}
+	transactions := Transactions{hash: txs}
+	hash := types.DeriveSha(transactions)
+	t.Logf("%x", hash)
+}
+
+func TestProofRandomTrie(t *testing.T) {
 	trie, vals := randomTrie(500)
 	root := trie.Hash()
 	for _, kv := range vals {
