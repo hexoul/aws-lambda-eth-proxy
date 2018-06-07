@@ -3,12 +3,15 @@ package crypto
 import (
 	"bytes"
 	"crypto/md5"
+	crand "crypto/rand"
 	"encoding/hex"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethdb"
+	tr "github.com/ethereum/go-ethereum/trie"
 )
 
 var (
@@ -30,6 +33,29 @@ var (
 	testprivhex = "289c2857d4598e37fb9647507e47a309d6133539bf21a8b9cb6df88fd5232032"
 	testaddr2   = "0x06839e455e0a821f946979d99abe8c4dfdd6fe8b"
 )
+
+type kv struct {
+	k, v []byte
+	t    bool
+}
+
+func TestProof(t *testing.T) {
+	trie, vals := randomTrie(500)
+	root := trie.Hash()
+	for _, kv := range vals {
+		proofs := ethdb.NewMemDatabase()
+		if trie.Prove(kv.k, 0, proofs) != nil {
+			t.Fatalf("missing key %x while constructing proof", kv.k)
+		}
+		val, _, err := tr.VerifyProof(root, kv.k, proofs)
+		if err != nil {
+			t.Fatalf("VerifyProof error for key %x: %v\nraw proof: %v", kv.k, err, proofs)
+		}
+		if !bytes.Equal(val, kv.v) {
+			t.Fatalf("VerifyProof returned wrong value for key %x: got %x, want %x", kv.k, val, kv.v)
+		}
+	}
+}
 
 func TestSign(t *testing.T) {
 	sig, err := Sign(testmsgraw2[2:], testprivhex)
@@ -135,4 +161,31 @@ func TestVerifySignature2(t *testing.T) {
 	if !crypto.VerifySignature(testpubkey2, testmsg2, testsig2[:len(testsig2)-1]) {
 		t.Errorf("invalid signature: pub: %x hash: %x sig: %x", testpubkey2, testmsg2, testsig2)
 	}
+}
+
+func randomTrie(n int) (*tr.Trie, map[string]*kv) {
+	trie := new(tr.Trie)
+	vals := make(map[string]*kv)
+	/*
+		for i := byte(0); i < 100; i++ {
+			value := &kv{common.LeftPadBytes([]byte{i}, 32), []byte{i}, false}
+			value2 := &kv{common.LeftPadBytes([]byte{i + 10}, 32), []byte{i}, false}
+			trie.Update(value.k, value.v)
+			trie.Update(value2.k, value2.v)
+			vals[string(value.k)] = value
+			vals[string(value2.k)] = value2
+		}
+	*/
+	for i := 0; i < n; i++ {
+		value := &kv{randBytes(32), randBytes(20), false}
+		trie.Update(value.k, value.v)
+		vals[string(value.k)] = value
+	}
+	return trie, vals
+}
+
+func randBytes(n int) []byte {
+	r := make([]byte, n)
+	crand.Read(r)
+	return r
 }

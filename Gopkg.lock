@@ -80,7 +80,11 @@
     "crypto",
     "crypto/secp256k1",
     "crypto/sha3",
-    "rlp"
+    "ethdb",
+    "log",
+    "metrics",
+    "rlp",
+    "trie"
   ]
   revision = "eae63c511ceafab14b92e274c1b18bf1700e2d3d"
   version = "v1.8.10"
@@ -92,10 +96,22 @@
   version = "v1.37.0"
 
 [[projects]]
+  name = "github.com/go-stack/stack"
+  packages = ["."]
+  revision = "259ab82a6cad3992b4e21ff5cac294ccb06474bc"
+  version = "v1.7.0"
+
+[[projects]]
   name = "github.com/gogo/protobuf"
   packages = ["proto"]
   revision = "1adfc126b41513cc696b209667c8656ea7aac67c"
   version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/golang/snappy"
+  packages = ["."]
+  revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
 
 [[projects]]
   name = "github.com/ipfs/go-ipfs-api"
@@ -206,6 +222,25 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/syndtr/goleveldb"
+  packages = [
+    "leveldb",
+    "leveldb/cache",
+    "leveldb/comparer",
+    "leveldb/errors",
+    "leveldb/filter",
+    "leveldb/iterator",
+    "leveldb/journal",
+    "leveldb/memdb",
+    "leveldb/opt",
+    "leveldb/storage",
+    "leveldb/table",
+    "leveldb/util"
+  ]
+  revision = "5d6fca44a948d2be89a9702de7717f0168403d3d"
+
+[[projects]]
+  branch = "master"
   name = "github.com/whyrusleeping/go-logging"
   packages = ["."]
   revision = "0457bb6b88fc1973573aaf6b5145d8d3ae972390"
@@ -231,9 +266,15 @@
   ]
   revision = "c11f84a56e43e20a78cee75a7c034031ecf57d1f"
 
+[[projects]]
+  branch = "v2"
+  name = "gopkg.in/karalabe/cookiejar.v2"
+  packages = ["collections/prque"]
+  revision = "8dcd6a7f4951f6ff3ee9cbb919a06d8925822e57"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "fa66a0a980ed7a037015ca19f04320f0fa9c26a8d47a9e6c925db70bc9542637"
+  inputs-digest = "998fb137bb5aa5c4c978e1ea868a4c4854e23e3a271ef351113640dda640cca1"
   solver-name = "gps-cdcl"
   solver-version = 1
