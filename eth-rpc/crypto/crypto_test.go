@@ -12,7 +12,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethdb"
-	tr "github.com/ethereum/go-ethereum/trie"
+	_ "github.com/ethereum/go-ethereum/rlp"
+	"github.com/ethereum/go-ethereum/trie"
 )
 
 var (
@@ -49,15 +50,18 @@ func (s Transactions) Len() int { return len(s.hash) }
 
 // GetRlp implements Rlpable and returns the i'th element of s in rlp.
 func (s Transactions) GetRlp(i int) []byte {
+	/*
+		enc, _ := rlp.EncodeToBytes(s.hash[i])
+		return enc
+	*/
 	return s.hash[i].Bytes()
 }
 
-func TestDeriveSha(t *testing.T) {
+func TestDeriveShaFromBytes(t *testing.T) {
 	var txs []common.Hash
-	raws := []string{"abc", "123", "def"}
+	raws := [][]byte{testsig}
 	for _, raw := range raws {
-		data := crypto.Keccak256([]byte(raw))
-		tx := common.BytesToHash(data)
+		tx := common.BytesToHash(raw)
 		txs = append(txs, tx)
 	}
 	transactions := Transactions{hash: txs}
@@ -65,15 +69,76 @@ func TestDeriveSha(t *testing.T) {
 	t.Logf("%x", hash)
 }
 
+type DerivableList interface {
+	Len() int
+	GetRlp(i int) []byte
+}
+
+func DeriveSha(list DerivableList) (common.Hash, *trie.Trie) {
+	trie := new(trie.Trie)
+	/*
+		keybuf := new(bytes.Buffer)
+		for i := 0; i < list.Len(); i++ {
+			keybuf.Reset()
+			rlp.Encode(keybuf, uint(i))
+			trie.Update(keybuf.Bytes(), list.GetRlp(i))
+		}
+	*/
+	for i := 0; i < list.Len(); i++ {
+		trie.Update(common.LeftPadBytes([]byte{byte(i)}, 32), list.GetRlp(i))
+	}
+	return trie.Hash(), trie
+}
+
+func TestDeriveShaFromString(t *testing.T) {
+	var txs []common.Hash
+	raws := []string{"abc", "123"}
+	for _, raw := range raws {
+		data := crypto.Keccak256([]byte(raw))
+		tx := common.BytesToHash(data)
+		txs = append(txs, tx)
+	}
+	transactions := Transactions{hash: txs}
+	t.Logf("data1 %x", transactions.GetRlp(0))
+	t.Logf("data2 %x", transactions.GetRlp(1))
+	//hash := types.DeriveSha(transactions)
+	root, tr := DeriveSha(transactions)
+	t.Logf("root: %x", root)
+	answer := common.BytesToHash(hexutil.MustDecode("0x1db254aa33fc8a3e1ddd6889aede3a913c6891ae3cefd1a3034145e95f65f670"))
+	if root != answer {
+		t.Fatalf("Root hash is different")
+	}
+
+	proofs := ethdb.NewMemDatabase()
+	for _, tx := range txs {
+		if tr.Prove(tx.Bytes(), 0, proofs) != nil {
+			t.Fatalf("missing key %x while constructing proof", tx.Bytes())
+		}
+		_, _, err := trie.VerifyProof(root, tx.Bytes(), proofs)
+		if err != nil {
+			t.Fatalf("VerifyProof error for key %x: %v\nraw proof: %v", tx.Bytes(), err, proofs)
+		}
+	}
+}
+
+func TestProofTrie(t *testing.T) {
+	tr := new(trie.Trie)
+	value := &kv{common.LeftPadBytes([]byte{0}, 32), hexutil.MustDecode("0x4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45"), false}
+	tr.Update(value.k, value.v)
+	value = &kv{common.LeftPadBytes([]byte{1}, 32), hexutil.MustDecode("0x64e604787cbf194841e7b68d7cd28786f6c9a0a3ab9f8b0a0e87cb4387ab0107"), false}
+	tr.Update(value.k, value.v)
+	t.Logf("%x", tr.Hash())
+}
+
 func TestProofRandomTrie(t *testing.T) {
-	trie, vals := randomTrie(500)
-	root := trie.Hash()
+	tr, vals := randomTrie(500)
+	root := tr.Hash()
 	for _, kv := range vals {
 		proofs := ethdb.NewMemDatabase()
-		if trie.Prove(kv.k, 0, proofs) != nil {
+		if tr.Prove(kv.k, 0, proofs) != nil {
 			t.Fatalf("missing key %x while constructing proof", kv.k)
 		}
-		val, _, err := tr.VerifyProof(root, kv.k, proofs)
+		val, _, err := trie.VerifyProof(root, kv.k, proofs)
 		if err != nil {
 			t.Fatalf("VerifyProof error for key %x: %v\nraw proof: %v", kv.k, err, proofs)
 		}
@@ -189,8 +254,8 @@ func TestVerifySignature2(t *testing.T) {
 	}
 }
 
-func randomTrie(n int) (*tr.Trie, map[string]*kv) {
-	trie := new(tr.Trie)
+func randomTrie(n int) (*trie.Trie, map[string]*kv) {
+	trie := new(trie.Trie)
 	vals := make(map[string]*kv)
 	/*
 		for i := byte(0); i < 100; i++ {
