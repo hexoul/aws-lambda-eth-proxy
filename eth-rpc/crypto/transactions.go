@@ -2,9 +2,11 @@ package crypto
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/ethereum/go-ethereum/common"
 	_ "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/trie"
 )
@@ -40,4 +42,19 @@ func DeriveSha(txs []common.Hash) (common.Hash, *trie.Trie) {
 		//trie.Update(common.LeftPadBytes([]byte{byte(i)}, 32), transactions.GetRlp(i))
 	}
 	return trie.Hash(), trie
+}
+
+func VerifyProof(txs []common.Hash, tr *trie.Trie) (bool, error) {
+	root := tr.Hash()
+	proofs := ethdb.NewMemDatabase()
+	for _, tx := range txs {
+		if tr.Prove(tx.Bytes(), 0, proofs) != nil {
+			return false, fmt.Errorf("VerifyProof error missing key %x while constructing proof", tx.Bytes())
+		}
+		_, _, err := trie.VerifyProof(root, tx.Bytes(), proofs)
+		if err != nil {
+			return false, fmt.Errorf("VerifyProof error for key %x: %v\nraw proof: %v", tx.Bytes(), err, proofs)
+		}
+	}
+	return true, nil
 }

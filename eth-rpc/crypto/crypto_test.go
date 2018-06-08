@@ -69,15 +69,8 @@ func TestDeriveShaFromString(t *testing.T) {
 		t.Fatalf("Root hash is different")
 	}
 
-	proofs := ethdb.NewMemDatabase()
-	for _, tx := range txs {
-		if tr.Prove(tx.Bytes(), 0, proofs) != nil {
-			t.Fatalf("missing key %x while constructing proof", tx.Bytes())
-		}
-		_, _, err := trie.VerifyProof(root, tx.Bytes(), proofs)
-		if err != nil {
-			t.Fatalf("VerifyProof error for key %x: %v\nraw proof: %v", tx.Bytes(), err, proofs)
-		}
+	if ret, err := VerifyProof(txs, tr); !ret {
+		t.Fatalf("Failed to verify proof %s", err)
 	}
 }
 
