@@ -27,7 +27,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	fmt.Printf("RpcRequest: %#v\n", req)
 
 	// Forward RPC request to Ether node
-	respBody, err := rpc.New(rpc.Testnet).DoRpc(req)
+	respBody, err := rpc.GetInstance(rpc.Testnet).DoRpc(req)
 
 	// Relay a response from the node
 	resp := json.GetRpcResponseFromJson(respBody)

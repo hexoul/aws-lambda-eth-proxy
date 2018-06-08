@@ -57,13 +57,14 @@ func (c *Crypto) Sign(msg string) string {
 	if err != nil {
 		return ""
 	}
-	return hex.EncodeToString(sig)
+	sig[64] += 27
+	return hexutil.Encode(sig)
 }
 
 func Sign(msg, privKey string) ([]byte, error) {
 	key, _ := crypto.HexToECDSA(privKey)
 	bMsg := crypto.Keccak256([]byte(msg))
-	return crypto.Sign(bMsg, key)
+	return crypto.Sign(signHash(bMsg), key)
 }
 
 func getConfigFromDB(propVal string) string {

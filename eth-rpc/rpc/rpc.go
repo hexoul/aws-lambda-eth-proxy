@@ -7,13 +7,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"net"
 	"net/http"
+	"sync"
+	"time"
 
 	ethjson "github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/json"
 )
 
 type Rpc struct {
 	netType string
+	client  *http.Client
 }
 
 const (
@@ -21,11 +25,19 @@ const (
 	Testnet = "TEST"
 )
 
+// For singleton
+var instance *Rpc
+var once sync.Once
+
 // mode is MAINNET or TESTNET
-func New(_netType string) *Rpc {
-	return &Rpc{
-		netType: _netType,
-	}
+func GetInstance(_netType string) *Rpc {
+	once.Do(func() {
+		instance = &Rpc{
+			netType: _netType,
+		}
+		instance.InitClient()
+	})
+	return instance
 }
 
 func (r *Rpc) getUrl() (url string) {
@@ -38,6 +50,19 @@ func (r *Rpc) getUrl() (url string) {
 		break
 	}
 	return
+}
+
+func (r *Rpc) InitClient() {
+	var netTransport = &http.Transport{
+		Dial: (&net.Dialer{
+			Timeout: 5 * time.Second,
+		}).Dial,
+		TLSHandshakeTimeout: 5 * time.Second,
+	}
+	r.client = &http.Client{
+		Timeout:   time.Second * 10,
+		Transport: netTransport,
+	}
 }
 
 // TODO: Retry when fail, give penalty to low-latency node
@@ -62,7 +87,7 @@ func (r *Rpc) DoRpc(req interface{}) (string, error) {
 
 	// HTTP request
 	reqBody := bytes.NewBufferString(msg)
-	resp, err := http.Post(url, ContentType, reqBody)
+	resp, err := r.client.Post(url, ContentType, reqBody)
 	if err != nil {
 		return "", fmt.Errorf("HttpError, %s\n", err)
 	}
