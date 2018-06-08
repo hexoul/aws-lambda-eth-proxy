@@ -41,22 +41,6 @@ type kv struct {
 	t    bool
 }
 
-type Transactions struct {
-	hash []common.Hash
-}
-
-// Len returns the length of s.
-func (s Transactions) Len() int { return len(s.hash) }
-
-// GetRlp implements Rlpable and returns the i'th element of s in rlp.
-func (s Transactions) GetRlp(i int) []byte {
-	/*
-		enc, _ := rlp.EncodeToBytes(s.hash[i])
-		return enc
-	*/
-	return s.hash[i].Bytes()
-}
-
 func TestDeriveShaFromBytes(t *testing.T) {
 	var txs []common.Hash
 	raws := [][]byte{testsig}
@@ -66,28 +50,7 @@ func TestDeriveShaFromBytes(t *testing.T) {
 	}
 	transactions := Transactions{hash: txs}
 	hash := types.DeriveSha(transactions)
-	t.Logf("%x", hash)
-}
-
-type DerivableList interface {
-	Len() int
-	GetRlp(i int) []byte
-}
-
-func DeriveSha(list DerivableList) (common.Hash, *trie.Trie) {
-	trie := new(trie.Trie)
-	/*
-		keybuf := new(bytes.Buffer)
-		for i := 0; i < list.Len(); i++ {
-			keybuf.Reset()
-			rlp.Encode(keybuf, uint(i))
-			trie.Update(keybuf.Bytes(), list.GetRlp(i))
-		}
-	*/
-	for i := 0; i < list.Len(); i++ {
-		trie.Update(common.LeftPadBytes([]byte{byte(i)}, 32), list.GetRlp(i))
-	}
-	return trie.Hash(), trie
+	t.Logf("root hash: %x", hash)
 }
 
 func TestDeriveShaFromString(t *testing.T) {
@@ -98,13 +61,10 @@ func TestDeriveShaFromString(t *testing.T) {
 		tx := common.BytesToHash(data)
 		txs = append(txs, tx)
 	}
-	transactions := Transactions{hash: txs}
-	t.Logf("data1 %x", transactions.GetRlp(0))
-	t.Logf("data2 %x", transactions.GetRlp(1))
 	//hash := types.DeriveSha(transactions)
-	root, tr := DeriveSha(transactions)
-	t.Logf("root: %x", root)
-	answer := common.BytesToHash(hexutil.MustDecode("0x1db254aa33fc8a3e1ddd6889aede3a913c6891ae3cefd1a3034145e95f65f670"))
+	root, tr := DeriveSha(txs)
+	t.Logf("root hash: %x", root)
+	answer := common.BytesToHash(hexutil.MustDecode("0x1ada6a49c824030f37e8588704a47ee39eab19200d71e8244324ae3f1b146fc9"))
 	if root != answer {
 		t.Fatalf("Root hash is different")
 	}
