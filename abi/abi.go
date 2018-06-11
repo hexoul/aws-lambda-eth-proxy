@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"strings"
 
+	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
 	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
 
@@ -45,6 +46,23 @@ func Call(abi abi.ABI, to, name string, inputs []interface{}, outputs interface{
 
 	r := rpc.GetInstance(Targetnet)
 	respStr, err := r.Call(to, data)
+	if err != nil {
+		return err
+	}
+
+	resp := json.GetRpcResponseFromJson(respStr)
+	return Unpack(abi, outputs, name, resp.Result.(string))
+}
+
+func SendTransaction(abi abi.ABI, to, name string, inputs []interface{}, outputs interface{}, gas int) error {
+	data, err := Pack(abi, name, inputs...)
+	if err != nil {
+		return err
+	}
+
+	c := crypto.GetInstance()
+	r := rpc.GetInstance(Targetnet)
+	respStr, err := r.SendTransaction(c.Address, to, data, gas)
 	if err != nil {
 		return err
 	}
