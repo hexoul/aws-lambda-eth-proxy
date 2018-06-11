@@ -74,6 +74,7 @@
 [[projects]]
   name = "github.com/ethereum/go-ethereum"
   packages = [
+    "accounts/abi",
     "common",
     "common/hexutil",
     "common/math",
@@ -277,6 +278,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "09d35fa5e601d6c662aa0118b0c602a32b081f603055f22aecc60b0d02ac78d4"
+  inputs-digest = "392451ef09e7c2778fd05196afb90e91d93a00a8ae9a21aa679c33f698810cad"
   solver-name = "gps-cdcl"
   solver-version = 1
