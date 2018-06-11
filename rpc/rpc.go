@@ -99,3 +99,18 @@ func (r *Rpc) DoRpc(req interface{}) (string, error) {
 	resp.Body.Close()
 	return ret, nil
 }
+
+func (r *Rpc) Call(to, data string) (string, error) {
+	req := ethjson.RpcRequest{
+		Jsonrpc: "2.0",
+		Id:      1,
+		Method:  "eth_call",
+	}
+	params := map[string]string{
+		"to":   to,
+		"data": data,
+	}
+	req.Params = append(req.Params, params)
+	req.Params = append(req.Params, "latest")
+	return r.DoRpc(req)
+}

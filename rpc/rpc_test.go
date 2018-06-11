@@ -6,6 +6,13 @@ import (
 	"github.com/hexoul/eth-rpc-on-aws-lambda/json"
 )
 
+func TestCall(t *testing.T) {
+	r := GetInstance(Testnet)
+	if _, err := r.Call("0x11", "0x123"); err != nil {
+		t.Errorf("Failed to RPC Call")
+	}
+}
+
 func TestRpc(t *testing.T) {
 	testMsg := "{\"jsonrpc\":\"2.0\",\"method\":\"web3_clientVersion\",\"params\":[\"a\",1],\"id\":100}"
 
