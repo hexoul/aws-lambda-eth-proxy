@@ -11,6 +11,8 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
+const Targetnet = rpc.Testnet
+
 func Pack(abi abi.ABI, name string, args ...interface{}) (string, error) {
 	data, err := abi.Pack(name, args...)
 	if err != nil {
@@ -41,7 +43,7 @@ func Call(abi abi.ABI, to, name string, inputs []interface{}, outputs interface{
 		return err
 	}
 
-	r := rpc.GetInstance(rpc.Testnet)
+	r := rpc.GetInstance(Targetnet)
 	respStr, err := r.Call(to, data)
 	if err != nil {
 		return err
@@ -58,7 +60,7 @@ func GetAbiFromJson(raw string) (abi.ABI, error) {
 // getAbiFromAddress is NOT YET SUPPORTED
 // TODO: use eth.compile.solidity?
 func getAbiFromAddress(addr string) (abi abi.ABI) {
-	r := rpc.GetInstance(rpc.Testnet)
+	r := rpc.GetInstance(Targetnet)
 	respStr, err := r.GetCode(addr)
 	if err != nil {
 		return
