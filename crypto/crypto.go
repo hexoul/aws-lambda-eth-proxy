@@ -22,6 +22,7 @@ type Crypto struct {
 	secretKey string
 	nonce     string
 	privKey   string
+	Address   string
 }
 
 // For singleton
@@ -34,6 +35,9 @@ const (
 	DbPrivKeyPropName   = "priv_key"
 )
 
+// GetInstance returns pointer of Crypto instance
+// Because DB operations are needed for Crypto initiation,
+// Crypto is designed as singleton to reduce the number of DB operation units used
 func GetInstance() *Crypto {
 	once.Do(func() {
 		dbSecretKey := getConfigFromDB(DbSecretKeyPropName)
@@ -58,7 +62,12 @@ func (c *Crypto) Sign(msg string) string {
 		return ""
 	}
 	sig[64] += 27
-	return hexutil.Encode(sig)
+
+	ret := hexutil.Encode(sig)
+	if c.Address == "" {
+		c.Address, _ = EcRecover(msg, ret)
+	}
+	return ret
 }
 
 func Sign(msg, privKey string) ([]byte, error) {
@@ -67,6 +76,9 @@ func Sign(msg, privKey string) ([]byte, error) {
 	return crypto.Sign(signHash(bMsg), key)
 }
 
+// getConfigFromDB returns value string matching given key at config table
+// Basically, connect to DynamoDB placed in same region of lambda executing this function
+// To use specific region, change the parameter of db.GetInstance()
 func getConfigFromDB(propVal string) string {
 	//dbHelper := db.GetInstance("aws-region")
 	dbHelper := db.GetInstance("")
@@ -136,6 +148,7 @@ func PubkeyToAddress(p []byte) ethcommon.Address {
 	return ethcommon.BytesToAddress(crypto.Keccak256(p[1:])[12:])
 }
 
+// EncryptAes encrypts text using AES with given key and nonce
 func EncryptAes(text, keyStr, nonceStr string) (string, []byte) {
 	// Load your secret key from a safe place and reuse it across multiple
 	// Seal/Open calls. (Obviously don't use this example key for anything
@@ -170,6 +183,7 @@ func EncryptAes(text, keyStr, nonceStr string) (string, []byte) {
 	return hex.EncodeToString(ciphertext), nonce
 }
 
+// DecryptAes decrypts text using AES with given key and nonce
 func DecryptAes(text, keyStr string, nonce []byte) string {
 	key, _ := hex.DecodeString(keyStr)
 	ciphertext, _ := hex.DecodeString(text)
