@@ -13,6 +13,8 @@ import (
 	"time"
 
 	ethjson "github.com/hexoul/aws-lambda-eth-proxy/json"
+
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 type Rpc struct {
@@ -122,5 +124,31 @@ func (r *Rpc) GetCode(addr string) (string, error) {
 	}
 	req.Params = append(req.Params, addr)
 	req.Params = append(req.Params, "latest")
+	return r.DoRpc(req)
+}
+
+func (r *Rpc) SendTransaction(from, to, data string, gas int) (string, error) {
+	req := ethjson.RpcRequest{
+		Jsonrpc: "2.0",
+		Id:      1,
+		Method:  "eth_sendTransaction",
+	}
+	params := map[string]string{
+		"from": from,
+		"to":   to,
+		"gas":  fmt.Sprintf("0x%x", gas),
+		"data": data,
+	}
+	req.Params = append(req.Params, params)
+	return r.DoRpc(req)
+}
+
+func (r *Rpc) SendRawTransaction(raw []byte) (string, error) {
+	req := ethjson.RpcRequest{
+		Jsonrpc: "2.0",
+		Id:      1,
+		Method:  "eth_sendRawTransaction",
+	}
+	req.Params = append(req.Params, hexutil.Encode(raw))
 	return r.DoRpc(req)
 }
