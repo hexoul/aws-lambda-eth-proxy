@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	ethjson "github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/json"
+	ethjson "github.com/hexoul/eth-rpc-on-aws-lambda/json"
 )
 
 type Rpc struct {
