@@ -30,7 +30,7 @@ go test -v
 
 # Deploy
 1. Set Lambda on AWS
-  - Function package: compressed binary file in $GOPATH/src/{repo}/eth-rpc/bin
+  - Function package: compressed binary file in $GOPATH/src/{repo}/bin
   - Handler: eth-rpc (binary file name, it is optional)
   - Runtime: Go 1.x
   - (Optional) Include DynamoDB execution role to Lambda execution role  
@@ -51,7 +51,7 @@ go test -v
 godoc -http=:6060
 ```
 2. Open url
-  - http://localhost:6060/pkg/github.com/hexoul/eth-rpc-on-aws-lambda/eth-rpc/
+  - http://localhost:6060/pkg/github.com/hexoul/eth-rpc-on-aws-lambda/
   - If you change port at 1., it should be applied to url
 
 # Reference
