@@ -3,7 +3,7 @@ AWS Lambda project for ethereum JSON-RPC written in Golang.
 
 In addition, this project try porting web3 to Golang.
 
-Furthermore IPFS will be applied to overwhelm limited storage of blockchain.
+Furthermore it applied IPFS API here to overwhelm limited storage of blockchain.
 
 # Prerequisite
 1. Docker
