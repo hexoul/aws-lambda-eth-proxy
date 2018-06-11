@@ -2,6 +2,7 @@ package abi
 
 import (
 	"encoding/hex"
+	"strings"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
 	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
@@ -48,4 +49,21 @@ func Call(abi abi.ABI, to, name string, inputs []interface{}, outputs interface{
 
 	resp := json.GetRpcResponseFromJson(respStr)
 	return Unpack(abi, outputs, name, resp.Result.(string))
+}
+
+func GetAbiFromJson(raw string) (abi.ABI, error) {
+	return abi.JSON(strings.NewReader(raw))
+}
+
+// getAbiFromAddress is NOT YET SUPPORTED
+// TODO: use eth.compile.solidity?
+func getAbiFromAddress(addr string) (abi abi.ABI) {
+	r := rpc.GetInstance(rpc.Testnet)
+	respStr, err := r.GetCode(addr)
+	if err != nil {
+		return
+	}
+
+	json.GetRpcResponseFromJson(respStr)
+	return
 }
