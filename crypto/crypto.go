@@ -10,8 +10,8 @@ import (
 	"io"
 	"sync"
 
-	"github.com/hexoul/eth-rpc-on-aws-lambda/common"
-	"github.com/hexoul/eth-rpc-on-aws-lambda/db"
+	"github.com/hexoul/aws-lambda-eth-proxy/common"
+	"github.com/hexoul/aws-lambda-eth-proxy/db"
 
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"

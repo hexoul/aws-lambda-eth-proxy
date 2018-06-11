@@ -3,8 +3,8 @@ package abi
 import (
 	"encoding/hex"
 
-	"github.com/hexoul/eth-rpc-on-aws-lambda/json"
-	"github.com/hexoul/eth-rpc-on-aws-lambda/rpc"
+	"github.com/hexoul/aws-lambda-eth-proxy/json"
+	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common/hexutil"

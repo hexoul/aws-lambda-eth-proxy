@@ -3,7 +3,7 @@ package rpc
 import (
 	"testing"
 
-	"github.com/hexoul/eth-rpc-on-aws-lambda/json"
+	"github.com/hexoul/aws-lambda-eth-proxy/json"
 )
 
 func TestCall(t *testing.T) {

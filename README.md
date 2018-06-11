@@ -51,7 +51,7 @@ go test -v
 godoc -http=:6060
 ```
 2. Open url
-  - http://localhost:6060/pkg/github.com/hexoul/eth-rpc-on-aws-lambda/
+  - http://localhost:6060/pkg/github.com/hexoul/aws-lambda-eth-proxy/
   - If you change port at 1., it should be applied to url
 
 # Reference

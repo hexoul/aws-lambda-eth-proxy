@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	_ "github.com/hexoul/eth-rpc-on-aws-lambda/crypto"
-	"github.com/hexoul/eth-rpc-on-aws-lambda/json"
-	"github.com/hexoul/eth-rpc-on-aws-lambda/rpc"
+	_ "github.com/hexoul/aws-lambda-eth-proxy/crypto"
+	"github.com/hexoul/aws-lambda-eth-proxy/json"
+	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"

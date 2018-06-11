@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/hexoul/eth-rpc-on-aws-lambda/common"
+	"github.com/hexoul/aws-lambda-eth-proxy/common"
 )
 
 func TestUnit(t *testing.T) {
