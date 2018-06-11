@@ -1,9 +1,9 @@
 # Ethereum JSON-RPC on AWS Lambda
-AWS Lambda code to call and relay JSON-RPC of ethereum written in Golang.
+AWS Lambda project for ethereum JSON-RPC written in Golang.
 
 In addition, this project try porting web3 to Golang.
 
-Furthermore IPFS will be applied to this project to maximize service utility by supporting token development.
+Furthermore IPFS will be applied to overwhelm limited storage of blockchain.
 
 # Prerequisite
 1. Docker
