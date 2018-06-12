@@ -58,49 +58,49 @@ func Call(abi abi.ABI, to, name string, inputs []interface{}, outputs interface{
 	return Unpack(abi, outputs, name, resp.Result.(string))
 }
 
-func SendTransaction(abi abi.ABI, to, name string, inputs []interface{}, outputs interface{}, gas int) error {
+func SendTransaction(abi abi.ABI, to, name string, inputs []interface{}, gas int) (resp json.RpcResponse, err error) {
 	data, err := Pack(abi, name, inputs...)
 	if err != nil {
-		return err
+		return
 	}
 
 	c := crypto.GetInstance()
 	r := rpc.GetInstance(Targetnet)
 	respStr, err := r.SendTransaction(c.Address, to, data, gas)
 	if err != nil {
-		return err
+		return
 	}
 
-	resp := json.GetRpcResponseFromJson(respStr)
-	return Unpack(abi, outputs, name, resp.Result.(string))
+	resp = json.GetRpcResponseFromJson(respStr)
+	return
 }
 
-func SendTransactionWithSign(abi abi.ABI, to, name string, inputs []interface{}, outputs interface{}, gasLimit, gasPrice uint64) error {
+func SendTransactionWithSign(abi abi.ABI, to, name string, inputs []interface{}, gasLimit, gasPrice uint64) (resp json.RpcResponse, err error) {
 	data, err := abi.Pack(name, inputs...)
 	if err != nil {
-		return err
+		return
 	}
 
 	c := crypto.GetInstance()
 	tx := types.NewTransaction(0, common.HexToAddress(to), big.NewInt(0), uint64(gasLimit), big.NewInt(int64(gasPrice)), data)
 	tx, err = c.SignTx(tx)
 	if err != nil {
-		return err
+		return
 	}
 
 	rlpTx, err := rlp.EncodeToBytes(tx)
 	if err != nil {
-		return err
+		return
 	}
 
 	r := rpc.GetInstance(Targetnet)
 	respStr, err := r.SendRawTransaction(rlpTx)
 	if err != nil {
-		return err
+		return
 	}
 
-	resp := json.GetRpcResponseFromJson(respStr)
-	return Unpack(abi, outputs, name, resp.Result.(string))
+	resp = json.GetRpcResponseFromJson(respStr)
+	return
 }
 
 func GetAbiFromJson(raw string) (abi.ABI, error) {
