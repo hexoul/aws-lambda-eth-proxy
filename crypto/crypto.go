@@ -15,6 +15,7 @@ import (
 
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
@@ -68,6 +69,16 @@ func (c *Crypto) Sign(msg string) string {
 		c.Address, _ = EcRecover(msg, ret)
 	}
 	return ret
+}
+
+func (c *Crypto) SignTx(tx *types.Transaction) (*types.Transaction, error) {
+	signer := types.HomesteadSigner{}
+	privKey, _ := crypto.HexToECDSA(c.privKey)
+	signedTx, err := types.SignTx(tx, signer, privKey)
+	if err != nil {
+		return nil, fmt.Errorf("tx or private key is not appropriate")
+	}
+	return signedTx, nil
 }
 
 func Sign(msg, privKey string) ([]byte, error) {
