@@ -2,6 +2,7 @@ package abi
 
 import (
 	"encoding/hex"
+	"math/big"
 	"strings"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
@@ -9,7 +10,10 @@ import (
 	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 const Targetnet = rpc.Testnet
@@ -63,6 +67,34 @@ func SendTransaction(abi abi.ABI, to, name string, inputs []interface{}, outputs
 	c := crypto.GetInstance()
 	r := rpc.GetInstance(Targetnet)
 	respStr, err := r.SendTransaction(c.Address, to, data, gas)
+	if err != nil {
+		return err
+	}
+
+	resp := json.GetRpcResponseFromJson(respStr)
+	return Unpack(abi, outputs, name, resp.Result.(string))
+}
+
+func SendTransactionWithSign(abi abi.ABI, to, name string, inputs []interface{}, outputs interface{}, gasLimit, gasPrice uint64) error {
+	data, err := abi.Pack(name, inputs...)
+	if err != nil {
+		return err
+	}
+
+	c := crypto.GetInstance()
+	tx := types.NewTransaction(0, common.HexToAddress(to), big.NewInt(0), uint64(gasLimit), big.NewInt(int64(gasPrice)), data)
+	tx, err = c.SignTx(tx)
+	if err != nil {
+		return err
+	}
+
+	rlpTx, err := rlp.EncodeToBytes(tx)
+	if err != nil {
+		return err
+	}
+
+	r := rpc.GetInstance(Targetnet)
+	respStr, err := r.SendRawTransaction(rlpTx)
 	if err != nil {
 		return err
 	}
