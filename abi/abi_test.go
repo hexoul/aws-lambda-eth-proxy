@@ -55,6 +55,25 @@ func TestPack(t *testing.T) {
 	t.Logf("data: %s", data)
 }
 
+func TestCall(t *testing.T) {
+	abi, err := GetAbiFromJson(testabijson)
+	if err != nil {
+		t.Errorf("Failed to GetAbiFromJson")
+	}
+
+	resp, err := Call(abi, testcontractaddr, "owner", []interface{}{}, 0x1)
+	if err != nil || resp.Result == "" || resp.Error.Code != 0 {
+		t.Errorf("Failed to Call")
+	}
+	t.Logf("%s", resp.String())
+
+	var addr common.Address
+	Unpack(abi, &addr, "owner", resp.Result.(string))
+	if len(addr) == 0 {
+		t.Errorf("Failed to Unpack")
+	}
+}
+
 func TestSendTransaction(t *testing.T) {
 	abi, err := GetAbiFromJson(testabijson)
 	if err != nil {
