@@ -66,14 +66,21 @@ func TestSendTransaction(t *testing.T) {
 	if err != nil || resp.Result == "" || resp.Error.Code != 0 {
 		t.Errorf("Failed to SendTransaction")
 	}
-	t.Logf("%v", resp)
+	t.Logf("%s", resp.String())
 }
 
-func TestSendRawTransaction(t *testing.T) {
-	_, err := GetAbiFromJson(testabijson)
+func TestSendTransactionWithSign(t *testing.T) {
+	abi, err := GetAbiFromJson(testabijson)
 	if err != nil {
 		t.Errorf("Failed to GetAbiFromJson")
 	}
+
+	addr := common.HexToAddress(testaddr[2:])
+	resp, err := DummySendTransactionWithSign(abi, testcontractaddr, "transferOwnership", []interface{}{addr}, 0x1, 0x1)
+	if err != nil || resp.Result == "" || resp.Error.Code != 0 {
+		t.Errorf("Failed to SendTransactionWithSign")
+	}
+	t.Logf("%s", resp.String())
 }
 
 /*
