@@ -42,20 +42,20 @@ func Unpack(abi abi.ABI, v interface{}, name string, output string) error {
 	return abi.Unpack(v, name, data)
 }
 
-func Call(abi abi.ABI, to, name string, inputs []interface{}, outputs interface{}) error {
+func Call(abi abi.ABI, to, name string, inputs []interface{}, outputs interface{}) (resp json.RpcResponse, err error) {
 	data, err := Pack(abi, name, inputs...)
 	if err != nil {
-		return err
+		return
 	}
 
 	r := rpc.GetInstance(Targetnet)
 	respStr, err := r.Call(to, data)
 	if err != nil {
-		return err
+		return
 	}
 
-	resp := json.GetRpcResponseFromJson(respStr)
-	return Unpack(abi, outputs, name, resp.Result.(string))
+	resp = json.GetRpcResponseFromJson(respStr)
+	return
 }
 
 func SendTransaction(abi abi.ABI, to, name string, inputs []interface{}, gas int) (resp json.RpcResponse, err error) {
