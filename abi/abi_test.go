@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
+
+	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
 )
 
 const testabijson = `
@@ -61,7 +63,7 @@ func TestCall(t *testing.T) {
 		t.Errorf("Failed to GetAbiFromJson")
 	}
 
-	resp, err := Call(abi, testcontractaddr, "owner", []interface{}{}, 0x1)
+	resp, err := Call(abi, rpc.Testnet, testcontractaddr, "owner", []interface{}{}, 0x1)
 	if err != nil || resp.Result == "" || resp.Error.Code != 0 {
 		t.Errorf("Failed to Call")
 	}
@@ -81,7 +83,7 @@ func TestSendTransaction(t *testing.T) {
 	}
 
 	addr := common.HexToAddress(testaddr[2:])
-	resp, err := DummySendTransaction(abi, testcontractaddr, "transferOwnership", []interface{}{addr}, 0x1)
+	resp, err := DummySendTransaction(abi, rpc.Testnet, testcontractaddr, "transferOwnership", []interface{}{addr}, 0x1)
 	if err != nil || resp.Result == "" || resp.Error.Code != 0 {
 		t.Errorf("Failed to SendTransaction")
 	}
@@ -95,7 +97,7 @@ func TestSendTransactionWithSign(t *testing.T) {
 	}
 
 	addr := common.HexToAddress(testaddr[2:])
-	resp, err := DummySendTransactionWithSign(abi, testcontractaddr, "transferOwnership", []interface{}{addr}, 0x1, 0x1)
+	resp, err := DummySendTransactionWithSign(abi, rpc.Testnet, testcontractaddr, "transferOwnership", []interface{}{addr}, 0x1, 0x1)
 	if err != nil || resp.Result == "" || resp.Error.Code != 0 {
 		t.Errorf("Failed to SendTransactionWithSign")
 	}
