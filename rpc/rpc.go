@@ -37,7 +37,11 @@ var httpFailCnt = make(map[string]int)
 // netType => available length of IP list
 var availLen = make(map[string]int)
 
+// Threshold to classify nodes
 const threshold = 10
+
+// RPC retry count
+const retryCnt = 3
 
 // mode is MAINNET or TESTNET
 func GetInstance(_netType string) *Rpc {
@@ -83,7 +87,7 @@ func (r *Rpc) refreshUrlList(url string) {
 	}
 
 	// Pick item will be deleted
-	var delIdx int
+	delIdx := -1
 	for i, item := range *p {
 		if item == url {
 			delIdx = i
@@ -91,8 +95,8 @@ func (r *Rpc) refreshUrlList(url string) {
 		}
 	}
 
-	// Ignore if this url is already removed
-	if delIdx >= availLen[r.netType] {
+	// Ignore if this url is already removed or not found
+	if delIdx >= availLen[r.netType] || delIdx < 0 {
 		return
 	}
 
