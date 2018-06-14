@@ -123,7 +123,7 @@ func (r *Rpc) InitClient() {
 }
 
 // TODO: Retry when fail, give penalty to low-latency node
-func (r *Rpc) DoRpc(req interface{}) (string, error) {
+func (r *Rpc) DoRpc(req interface{}) (ret string, err error) {
 	// Get url following netType
 	url := r.getUrl()
 
@@ -134,28 +134,37 @@ func (r *Rpc) DoRpc(req interface{}) (string, error) {
 		msg, _ = req.(string)
 		break
 	case ethjson.RpcRequest:
-		if ret, err := json.Marshal(req); err == nil {
-			msg = string(ret)
+		if marshal, e := json.Marshal(req); e == nil {
+			msg = string(marshal)
 			break
 		}
 	default:
-		return "", fmt.Errorf("Invalid req type")
+		err = fmt.Errorf("Invalid req type")
+		return
 	}
 
 	// HTTP request
 	reqBody := bytes.NewBufferString(msg)
-	resp, err := r.client.Post(url, ContentType, reqBody)
-	if err != nil {
-		r.refreshUrlList(url)
-		return "", fmt.Errorf("HttpError, %s\n", err)
+	var resp *http.Response
+	var respBody []byte
+	for i := 0; i < retryCnt; i++ {
+		resp, err = r.client.Post(url, ContentType, reqBody)
+		if err != nil {
+			r.refreshUrlList(url)
+			continue
+		}
+		respBody, err = ioutil.ReadAll(resp.Body)
+		if err == nil {
+			break
+		}
 	}
-	respBody, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", fmt.Errorf("IoError, %s\n", err)
+	if len(respBody) == 0 {
+		return
 	}
-	ret := string(respBody)
+
+	ret = string(respBody)
 	resp.Body.Close()
-	return ret, nil
+	return
 }
 
 func initRpcRequest(method string) ethjson.RpcRequest {
