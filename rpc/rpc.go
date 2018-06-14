@@ -25,6 +25,13 @@ type Rpc struct {
 const (
 	Mainnet = "MAIN"
 	Testnet = "TEST"
+	// For initial request
+	initParamJsonrpc = "2.0"
+	initParamId      = 1
+	// Threshold to classify nodes
+	threshold = 10
+	// RPC retry count
+	retryCnt = 3
 )
 
 // For singleton
@@ -36,12 +43,6 @@ var httpFailCnt = make(map[string]int)
 
 // netType => available length of IP list
 var availLen = make(map[string]int)
-
-// Threshold to classify nodes
-const threshold = 10
-
-// RPC retry count
-const retryCnt = 3
 
 // mode is MAINNET or TESTNET
 func GetInstance(_netType string) *Rpc {
@@ -159,8 +160,8 @@ func (r *Rpc) DoRpc(req interface{}) (string, error) {
 
 func (r *Rpc) Call(to, data string) (string, error) {
 	req := ethjson.RpcRequest{
-		Jsonrpc: "2.0",
-		Id:      1,
+		Jsonrpc: initParamJsonrpc,
+		Id:      initParamId,
 		Method:  "eth_call",
 	}
 	params := map[string]string{
@@ -174,8 +175,8 @@ func (r *Rpc) Call(to, data string) (string, error) {
 
 func (r *Rpc) GetCode(addr string) (string, error) {
 	req := ethjson.RpcRequest{
-		Jsonrpc: "2.0",
-		Id:      1,
+		Jsonrpc: initParamJsonrpc,
+		Id:      initParamId,
 		Method:  "eth_getCode",
 	}
 	req.Params = append(req.Params, addr)
@@ -185,8 +186,8 @@ func (r *Rpc) GetCode(addr string) (string, error) {
 
 func (r *Rpc) SendTransaction(from, to, data string, gas int) (string, error) {
 	req := ethjson.RpcRequest{
-		Jsonrpc: "2.0",
-		Id:      1,
+		Jsonrpc: initParamJsonrpc,
+		Id:      initParamId,
 		Method:  "eth_sendTransaction",
 	}
 	params := map[string]string{
@@ -201,8 +202,8 @@ func (r *Rpc) SendTransaction(from, to, data string, gas int) (string, error) {
 
 func (r *Rpc) SendRawTransaction(raw []byte) (string, error) {
 	req := ethjson.RpcRequest{
-		Jsonrpc: "2.0",
-		Id:      1,
+		Jsonrpc: initParamJsonrpc,
+		Id:      initParamId,
 		Method:  "eth_sendRawTransaction",
 	}
 	req.Params = append(req.Params, hexutil.Encode(raw))
