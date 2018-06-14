@@ -6,8 +6,10 @@ In addition, this project try porting web3 to Golang.
 Furthermore it applied IPFS API here to overwhelm limited storage of blockchain.
 
 # Prerequisite
+0. Go
+  - Install at https://golang.org/doc/install
 1. Docker
-  - Install docker (https://docs.docker.com/install/)
+  - Install at https://docs.docker.com/install
 2. xgo
   - because of C compile in go-ethereum, we need improved cross-compiler
   ```shell
