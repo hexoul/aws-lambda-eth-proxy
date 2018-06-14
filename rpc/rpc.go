@@ -34,15 +34,15 @@ const (
 	retryCnt = 3
 )
 
-// For singleton
-var instance *Rpc
-var once sync.Once
-
-// IP => http fail count
-var httpFailCnt = make(map[string]int)
-
-// netType => available length of IP list
-var availLen = make(map[string]int)
+var (
+	// For singleton
+	instance *Rpc
+	once     sync.Once
+	// IP => http fail count
+	httpFailCnt = make(map[string]int)
+	// netType => available length of IP list
+	availLen = make(map[string]int)
+)
 
 // mode is MAINNET or TESTNET
 func GetInstance(_netType string) *Rpc {
@@ -158,12 +158,16 @@ func (r *Rpc) DoRpc(req interface{}) (string, error) {
 	return ret, nil
 }
 
-func (r *Rpc) Call(to, data string) (string, error) {
-	req := ethjson.RpcRequest{
+func initRpcRequest(method string) ethjson.RpcRequest {
+	return ethjson.RpcRequest{
 		Jsonrpc: initParamJsonrpc,
 		Id:      initParamId,
-		Method:  "eth_call",
+		Method:  method,
 	}
+}
+
+func (r *Rpc) Call(to, data string) (string, error) {
+	req := initRpcRequest("eth_call")
 	params := map[string]string{
 		"to":   to,
 		"data": data,
@@ -174,22 +178,14 @@ func (r *Rpc) Call(to, data string) (string, error) {
 }
 
 func (r *Rpc) GetCode(addr string) (string, error) {
-	req := ethjson.RpcRequest{
-		Jsonrpc: initParamJsonrpc,
-		Id:      initParamId,
-		Method:  "eth_getCode",
-	}
+	req := initRpcRequest("eth_getCode")
 	req.Params = append(req.Params, addr)
 	req.Params = append(req.Params, "latest")
 	return r.DoRpc(req)
 }
 
 func (r *Rpc) SendTransaction(from, to, data string, gas int) (string, error) {
-	req := ethjson.RpcRequest{
-		Jsonrpc: initParamJsonrpc,
-		Id:      initParamId,
-		Method:  "eth_sendTransaction",
-	}
+	req := initRpcRequest("eth_sendTransaction")
 	params := map[string]string{
 		"from": from,
 		"to":   to,
@@ -201,11 +197,7 @@ func (r *Rpc) SendTransaction(from, to, data string, gas int) (string, error) {
 }
 
 func (r *Rpc) SendRawTransaction(raw []byte) (string, error) {
-	req := ethjson.RpcRequest{
-		Jsonrpc: initParamJsonrpc,
-		Id:      initParamId,
-		Method:  "eth_sendRawTransaction",
-	}
+	req := initRpcRequest("eth_sendRawTransaction")
 	req.Params = append(req.Params, hexutil.Encode(raw))
 	return r.DoRpc(req)
 }
