@@ -6,6 +6,18 @@ import (
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
 )
 
+func TestRefreshUrlList(t *testing.T) {
+	r := GetInstance(Testnet)
+	initLen := len(TestnetUrls)
+	target := TestnetUrls[0]
+	for i := 0; i < 30; i++ {
+		r.refreshUrlList(target)
+	}
+	if (initLen - 1) != availLen[Testnet] {
+		t.Errorf("refreshUrlList is abnormal")
+	}
+}
+
 func TestCall(t *testing.T) {
 	r := GetInstance(Testnet)
 	if _, err := r.Call("0x11", "0x123"); err != nil {

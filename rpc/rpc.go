@@ -31,11 +31,21 @@ const (
 var instance *Rpc
 var once sync.Once
 
+// IP => http fail count
+var httpFailCnt = make(map[string]int)
+
+// netType => available length of IP list
+var availLen = make(map[string]int)
+
+const threshold = 10
+
 // mode is MAINNET or TESTNET
 func GetInstance(_netType string) *Rpc {
 	once.Do(func() {
 		instance = &Rpc{}
 		instance.InitClient()
+		availLen[Mainnet] = len(MainnetUrls)
+		availLen[Testnet] = len(TestnetUrls)
 	})
 	instance.netType = _netType
 	return instance
@@ -44,13 +54,54 @@ func GetInstance(_netType string) *Rpc {
 func (r *Rpc) getUrl() (url string) {
 	switch r.netType {
 	case Mainnet:
-		url = MainnetUrls[rand.Intn(len(MainnetUrls))]
+		url = MainnetUrls[rand.Intn(availLen[Mainnet])]
 		break
 	case Testnet:
-		url = TestnetUrls[rand.Intn(len(TestnetUrls))]
+		url = TestnetUrls[rand.Intn(availLen[Testnet])]
 		break
 	}
 	return
+}
+
+// refreshUrlList sorts url list to avoid bad nodes
+// which is not responsible for our request in the past
+func (r *Rpc) refreshUrlList(url string) {
+	httpFailCnt[url]++
+	if httpFailCnt[url] <= threshold {
+		return
+	}
+
+	// Pick url list following netType
+	var p *[]string
+	switch r.netType {
+	case Mainnet:
+		p = &MainnetUrls
+		break
+	case Testnet:
+		p = &TestnetUrls
+		break
+	}
+
+	// Pick item will be deleted
+	var delIdx int
+	for i, item := range *p {
+		if item == url {
+			delIdx = i
+			break
+		}
+	}
+
+	// Ignore if this url is already removed
+	if delIdx >= availLen[r.netType] {
+		return
+	}
+
+	// Swap last item and the item will be deleted
+	l := availLen[r.netType]
+	(*p)[l-1], (*p)[delIdx] = (*p)[delIdx], (*p)[l-1]
+
+	// Decrease available length of url list
+	availLen[r.netType]--
 }
 
 func (r *Rpc) InitClient() {
@@ -90,6 +141,7 @@ func (r *Rpc) DoRpc(req interface{}) (string, error) {
 	reqBody := bytes.NewBufferString(msg)
 	resp, err := r.client.Post(url, ContentType, reqBody)
 	if err != nil {
+		r.refreshUrlList(url)
 		return "", fmt.Errorf("HttpError, %s\n", err)
 	}
 	respBody, err := ioutil.ReadAll(resp.Body)
