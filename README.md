@@ -5,6 +5,13 @@ In addition, this project try porting web3 to Golang.
 
 Furthermore it applied IPFS API here to overwhelm limited storage of blockchain.
 
+# Features
+1. JSON-RPC relay with Ethereum node
+2. Proofs for sign and merkle tree such as Ecrecover, DeriveSha, VerifyProof and so on
+3. Sign, SignTx with encrypted private key on DynamoDB
+4. IPFS interface
+5. fromWei, toWei written in Golang
+
 # Prerequisite
 0. Go
   - Install at https://golang.org/doc/install
@@ -39,13 +46,6 @@ go test -v
 2. Set API Gateway as proxy on AWS
 3. Add API Gateway as Lambda trigger
 4. Add CloudWatch Logs
-
-# Usage
-1. JSON-RPC relay with Ethereum node
-2. Ecrecover
-3. Sign with encrypted private key on DynamoDB
-4. IPFS
-5. fromWei, toWei written in Golang
 
 # Documentation
 1. Execute godoc -http like below
