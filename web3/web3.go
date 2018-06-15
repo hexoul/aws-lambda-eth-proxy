@@ -37,12 +37,11 @@ func getBigFloat(number string) *big.Float {
 	return val
 }
 
-func FromWei(number, unit string) (ret, err string) {
+func FromWei(number, unit string) (ret string, err error) {
 	// Validate unit
 	unitVal, errStr := GetValueOfUnit(unit)
 	if errStr != "" {
-		err = "Failed to find unit"
-		fmt.Println(err)
+		err = fmt.Errorf("Failed to find unit")
 		return
 	}
 
@@ -50,7 +49,7 @@ func FromWei(number, unit string) (ret, err string) {
 	val := getBigFloat(number)
 	if val == nil {
 		// TODO: when number overflow, split to upper and lower bits, convert each bits, combine
-		err = "Number is not appropriate for float64"
+		err = fmt.Errorf("Number is not appropriate for float64")
 		return
 	}
 
@@ -60,12 +59,11 @@ func FromWei(number, unit string) (ret, err string) {
 	return
 }
 
-func ToWei(number, unit string) (ret, err string) {
+func ToWei(number, unit string) (ret string, err error) {
 	// Validate unit
 	unitVal, errStr := GetValueOfUnit(unit)
 	if errStr != "" {
-		err = "Failed to find unit"
-		fmt.Println(err)
+		err = fmt.Errorf("Failed to find unit")
 		return
 	}
 
@@ -73,7 +71,7 @@ func ToWei(number, unit string) (ret, err string) {
 	val := getBigFloat(number)
 	if val == nil {
 		// TODO: when number overflow, split to upper and lower bits, convert each bits, combine
-		err = "Number is not appropriate for float64"
+		err = fmt.Errorf("Number is not appropriate for float64")
 		return
 	}
 
