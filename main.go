@@ -2,11 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	_ "github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
 	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
+	"github.com/hexoul/aws-lambda-eth-proxy/web3"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -25,14 +25,27 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	} else if method := request.PathParameters[ParamFuncName]; method != "" {
 		req.Method = method
 	}
-	fmt.Printf("RpcRequest: %#v\n", req)
+
+	// Preprocessing
+	var unit string
+	if req.Method == "eth_getBalance" && len(req.Params) > 2 {
+		unit = req.Params[2].(string)
+		req.Params = req.Params[:2]
+	}
 
 	// Forward RPC request to Ether node
 	respBody, err := rpc.GetInstance(Targetnet).DoRpc(req)
 
 	// Relay a response from the node
 	resp := json.GetRpcResponseFromJson(respBody)
-	fmt.Printf("RpcResponse: %#v\n", resp)
+
+	// Postprocessing
+	if unit != "" {
+		if val, err := web3.FromWei(resp.Result.(string), unit); err == nil {
+			resp.Result = val
+		}
+	}
+
 	retCode := 200
 	if err != nil {
 		// In case of server-side RPC fail
