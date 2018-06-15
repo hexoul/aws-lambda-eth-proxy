@@ -33,7 +33,7 @@ var (
 	testaddr    = "0xd396348325532a21ab2b01aeee1499a713453e7c"
 
 	testprivhex = "289c2857d4598e37fb9647507e47a309d6133539bf21a8b9cb6df88fd5232032"
-	testaddr2   = "0x06839e455e0a821f946979d99abe8c4dfdd6fe8b"
+	testaddr2   = "0xa9be5a5c3c1862f378409d0fedf2e517a47ac4f2"
 )
 
 type kv struct {
@@ -106,7 +106,7 @@ func TestSign(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to sign %s", err)
 	}
-	addr, ecErr := EcRecover(testmsgraw2, "0x"+hex.EncodeToString(sig))
+	addr, ecErr := EcRecover(testmsgraw2, hexutil.Encode(sig))
 	if ecErr != nil {
 		t.Errorf("Failed to sign, ecrecover error %s", ecErr)
 	} else if addr != testaddr2 {
