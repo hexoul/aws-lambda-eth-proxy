@@ -40,7 +40,7 @@ go test -v
 # Deploy
 1. Set Lambda on AWS
   - Function package: compressed binary file in $GOPATH/src/{repo}/bin
-  - Handler: eth-rpc (binary file name, it is optional)
+  - Handler: eth-proxy (binary file name, it is optional)
   - Runtime: Go 1.x
   - (Optional) Include DynamoDB execution role to Lambda execution role  
 2. Set API Gateway as proxy on AWS
