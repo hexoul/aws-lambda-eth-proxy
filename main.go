@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	_ "github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
@@ -34,21 +35,24 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	}
 
 	// Forward RPC request to Ether node
+	var resp json.RpcResponse
 	respBody, err := rpc.GetInstance(Targetnet).DoRpc(req)
+	if err == nil {
+		// Relay a response from the node
+		resp = json.GetRpcResponseFromJson(respBody)
 
-	// Relay a response from the node
-	resp := json.GetRpcResponseFromJson(respBody)
-
-	// Postprocessing
-	if unit != "" {
-		if val, err := web3.FromWei(resp.Result.(string), unit); err == nil {
-			resp.Result = val
+		// Postprocessing
+		if unit != "" {
+			if val, err := web3.FromWei(resp.Result.(string), unit); err == nil {
+				resp.Result = val
+			}
 		}
 	}
 
 	retCode := 200
 	if err != nil {
 		// In case of server-side RPC fail
+		fmt.Println(err.Error())
 		resp.Error.Message = err.Error()
 		respBody = resp.String()
 		retCode = 400
