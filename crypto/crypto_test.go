@@ -41,6 +41,9 @@ type kv struct {
 	t    bool
 }
 
+func TestGetPrivKey(t *testing.T) {
+}
+
 func TestDeriveShaFromBytes(t *testing.T) {
 	var txs []common.Hash
 	raws := [][]byte{testsig}

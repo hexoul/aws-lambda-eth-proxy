@@ -77,8 +77,12 @@ func (c *Crypto) Sign(msg string) string {
 }
 
 func (c *Crypto) SignTx(tx *types.Transaction) (*types.Transaction, error) {
-	// TODO: Assign signer following chainid
-	signer := types.HomesteadSigner{}
+	var signer types.Signer
+	if c.ChainId != nil {
+		signer = types.NewEIP155Signer(c.ChainId)
+	} else {
+		signer = types.HomesteadSigner{}
+	}
 	privKey, _ := crypto.HexToECDSA(c.privKey)
 	signedTx, err := types.SignTx(tx, signer, privKey)
 	if err != nil {
