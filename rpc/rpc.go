@@ -122,7 +122,7 @@ func (r *Rpc) InitClient() {
 	}
 }
 
-// TODO: Retry when fail, give penalty to low-latency node
+// Retry when fail, give penalty to low-latency node
 func (r *Rpc) DoRpc(req interface{}) (ret string, err error) {
 	// Get url following netType
 	url := r.getUrl()
