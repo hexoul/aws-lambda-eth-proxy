@@ -8,7 +8,6 @@ import (
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
 	"github.com/hexoul/aws-lambda-eth-proxy/predefined"
 	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
-	_ "github.com/hexoul/aws-lambda-eth-proxy/web3"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"

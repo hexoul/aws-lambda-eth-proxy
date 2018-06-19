@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"math/big"
 	"sync"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/common"
@@ -24,6 +25,7 @@ type Crypto struct {
 	nonce     string
 	privKey   string
 	Address   string
+	ChainId   *big.Int
 }
 
 // For singleton
@@ -45,8 +47,11 @@ func GetInstance() *Crypto {
 		dbNonce := getConfigFromDB(DbNoncePropName)
 		dbPrivKey := getConfigFromDB(DbPrivKeyPropName)
 
-		bNonce, _ := hex.DecodeString(dbNonce)
-		nPrivKey := DecryptAes(dbPrivKey, dbSecretKey, bNonce)
+		var nPrivKey string
+		if dbSecretKey != "" && dbNonce != "" && dbPrivKey != "" {
+			bNonce, _ := hex.DecodeString(dbNonce)
+			nPrivKey = DecryptAes(dbPrivKey, dbSecretKey, bNonce)
+		}
 
 		instance = &Crypto{
 			secretKey: dbSecretKey,
@@ -72,6 +77,7 @@ func (c *Crypto) Sign(msg string) string {
 }
 
 func (c *Crypto) SignTx(tx *types.Transaction) (*types.Transaction, error) {
+	// TODO: Assign signer following chainid
 	signer := types.HomesteadSigner{}
 	privKey, _ := crypto.HexToECDSA(c.privKey)
 	signedTx, err := types.SignTx(tx, signer, privKey)
@@ -98,6 +104,10 @@ func getConfigFromDB(propVal string) string {
 	}
 
 	ret := dbHelper.GetItem(common.DbConfigTblName, common.DbConfigPropName, propVal, common.DbConfigValName)
+	if ret == nil {
+		return ""
+	}
+
 	item := common.DbConfigResult{}
 	for _, elem := range ret.Items {
 		dbHelper.UnmarshalMap(elem, &item)
