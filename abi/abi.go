@@ -1,3 +1,4 @@
+// Smart contract call helper
 package abi
 
 import (

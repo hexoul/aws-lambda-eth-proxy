@@ -42,24 +42,6 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		}
 	}
 
-	// Preprocessing
-	/*
-		var unit string
-		if req.Method == "eth_getBalance" && len(req.Params) > 2 {
-			unit = req.Params[2].(string)
-			req.Params = req.Params[:2]
-		}
-	*/
-
-	// Postprocessing
-	/*
-		if unit != "" {
-			if val, err := web3.FromWei(resp.Result.(string), unit); err == nil {
-				resp.Result = val
-			}
-		}
-	*/
-
 	retCode := 200
 	if err != nil {
 		// In case of server-side RPC fail
