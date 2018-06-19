@@ -12,9 +12,9 @@ func foo(req json.RpcRequest) (json.RpcResponse, error) {
 	return json.RpcResponse{}, nil
 }
 
-func Forward(path string, req json.RpcRequest) (json.RpcResponse, error) {
+func Forward(req json.RpcRequest) (json.RpcResponse, error) {
 	for k, v := range predefinedPaths {
-		if k == path {
+		if k == req.Method {
 			return v.(func(json.RpcRequest) (json.RpcResponse, error))(req)
 		}
 	}
