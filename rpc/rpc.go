@@ -6,20 +6,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/big"
 	"math/rand"
 	"net"
 	"net/http"
 	"sync"
 	"time"
 
+	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	ethjson "github.com/hexoul/aws-lambda-eth-proxy/json"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 type Rpc struct {
-	netType string
-	client  *http.Client
+	NetType    string
+	NetVersion *big.Int
+	client     *http.Client
 }
 
 const (
@@ -40,24 +43,33 @@ var (
 	once     sync.Once
 	// IP => http fail count
 	httpFailCnt = make(map[string]int)
-	// netType => available length of IP list
+	// NetType => available length of IP list
 	availLen = make(map[string]int)
 )
 
-// mode is MAINNET or TESTNET
+// GetInstance returns the instance of Rpc
+// _netType should be Mainnet or Testnet
 func GetInstance(_netType string) *Rpc {
 	once.Do(func() {
 		instance = &Rpc{}
 		instance.InitClient()
 		availLen[Mainnet] = len(MainnetUrls)
 		availLen[Testnet] = len(TestnetUrls)
+
+		instance.NetType = _netType
+		netVersion, err := instance.GetChainId()
+		if err == nil {
+			resp := ethjson.GetRpcResponseFromJson(netVersion)
+			bigInt := new(big.Int)
+			instance.NetVersion, _ = bigInt.SetString(resp.Result.(string), 10)
+			crypto.GetInstance().ChainId = instance.NetVersion
+		}
 	})
-	instance.netType = _netType
 	return instance
 }
 
 func (r *Rpc) getUrl() (url string) {
-	switch r.netType {
+	switch r.NetType {
 	case Mainnet:
 		url = MainnetUrls[rand.Intn(availLen[Mainnet])]
 		break
@@ -76,9 +88,9 @@ func (r *Rpc) refreshUrlList(url string) {
 		return
 	}
 
-	// Pick url list following netType
+	// Pick url list following NetType
 	var p *[]string
-	switch r.netType {
+	switch r.NetType {
 	case Mainnet:
 		p = &MainnetUrls
 		break
@@ -97,16 +109,16 @@ func (r *Rpc) refreshUrlList(url string) {
 	}
 
 	// Ignore if this url is already removed or not found
-	if delIdx >= availLen[r.netType] || delIdx < 0 {
+	if delIdx >= availLen[r.NetType] || delIdx < 0 {
 		return
 	}
 
 	// Swap last item and the item will be deleted
-	l := availLen[r.netType]
+	l := availLen[r.NetType]
 	(*p)[l-1], (*p)[delIdx] = (*p)[delIdx], (*p)[l-1]
 
 	// Decrease available length of url list
-	availLen[r.netType]--
+	availLen[r.NetType]--
 }
 
 func (r *Rpc) InitClient() {
@@ -124,7 +136,7 @@ func (r *Rpc) InitClient() {
 
 // Retry when fail, give penalty to low-latency node
 func (r *Rpc) DoRpc(req interface{}) (ret string, err error) {
-	// Get url following netType
+	// Get url following NetType
 	url := r.getUrl()
 
 	// Validate request type
@@ -190,6 +202,11 @@ func (r *Rpc) GetCode(addr string) (string, error) {
 	req := initRpcRequest("eth_getCode")
 	req.Params = append(req.Params, addr)
 	req.Params = append(req.Params, "latest")
+	return r.DoRpc(req)
+}
+
+func (r *Rpc) GetChainId() (string, error) {
+	req := initRpcRequest("net_version")
 	return r.DoRpc(req)
 }
 
