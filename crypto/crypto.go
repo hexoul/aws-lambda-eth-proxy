@@ -26,6 +26,7 @@ type Crypto struct {
 	privKey   string
 	Address   string
 	ChainId   *big.Int
+	signer    types.Signer
 }
 
 // For singleton
@@ -77,14 +78,15 @@ func (c *Crypto) Sign(msg string) string {
 }
 
 func (c *Crypto) SignTx(tx *types.Transaction) (*types.Transaction, error) {
-	var signer types.Signer
-	if c.ChainId != nil {
-		signer = types.NewEIP155Signer(c.ChainId)
+	if c.signer != nil {
+		// Nothing to do
+	} else if c.ChainId != nil {
+		c.signer = types.NewEIP155Signer(c.ChainId)
 	} else {
-		signer = types.HomesteadSigner{}
+		c.signer = types.HomesteadSigner{}
 	}
 	privKey, _ := crypto.HexToECDSA(c.privKey)
-	signedTx, err := types.SignTx(tx, signer, privKey)
+	signedTx, err := types.SignTx(tx, c.signer, privKey)
 	if err != nil {
 		return nil, fmt.Errorf("tx or private key is not appropriate")
 	}
