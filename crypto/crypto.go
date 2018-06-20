@@ -1,4 +1,4 @@
-// Combined crypto modules for both general(AES, ...) and ethereum(Ecrevoer, sign, ...)
+// Package crypto is combined crypto module for both general(AES, ...) and ethereum(Ecrevoer, sign, ...)
 package crypto
 
 import (
@@ -20,12 +20,13 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
+// Crypto manager
 type Crypto struct {
 	secretKey string
 	nonce     string
 	privKey   string
 	Address   string
-	ChainId   *big.Int
+	ChainID   *big.Int
 	signer    types.Signer
 }
 
@@ -34,9 +35,12 @@ var instance *Crypto
 var once sync.Once
 
 const (
+	// DbSecretKeyPropName is DB column name about secret key
 	DbSecretKeyPropName = "secret_key"
-	DbNoncePropName     = "nonce"
-	DbPrivKeyPropName   = "priv_key"
+	// DbNoncePropName is DB column name about nonce
+	DbNoncePropName = "nonce"
+	// DbPrivKeyPropName is DB column name about private key
+	DbPrivKeyPropName = "priv_key"
 )
 
 // GetInstance returns pointer of Crypto instance
@@ -63,6 +67,7 @@ func GetInstance() *Crypto {
 	return instance
 }
 
+// Sign returns signed message using own private key
 func (c *Crypto) Sign(msg string) string {
 	sig, err := Sign(msg, c.privKey)
 	if err != nil {
@@ -77,11 +82,12 @@ func (c *Crypto) Sign(msg string) string {
 	return ret
 }
 
+// SignTx returns signed transaction using own private key
 func (c *Crypto) SignTx(tx *types.Transaction) (*types.Transaction, error) {
 	if c.signer != nil {
 		// Nothing to do
-	} else if c.ChainId != nil {
-		c.signer = types.NewEIP155Signer(c.ChainId)
+	} else if c.ChainID != nil {
+		c.signer = types.NewEIP155Signer(c.ChainID)
 	} else {
 		c.signer = types.HomesteadSigner{}
 	}
@@ -93,6 +99,7 @@ func (c *Crypto) SignTx(tx *types.Transaction) (*types.Transaction, error) {
 	return signedTx, nil
 }
 
+// Sign returns signed message using given private key
 func Sign(msg, privKey string) ([]byte, error) {
 	key, _ := crypto.HexToECDSA(privKey)
 	bMsg := crypto.Keccak256([]byte(msg))
@@ -162,15 +169,20 @@ func EcRecover(dataStr, sigStr string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	pubKey := crypto.ToECDSAPub(rpk)
+	pubKey, err := crypto.UnmarshalPubkey(rpk)
+	if err != nil {
+		return "", err
+	}
 	recoveredAddr := crypto.PubkeyToAddress(*pubKey)
 	return fmt.Sprintf("0x%x", recoveredAddr), nil
 }
 
+// EcRecoverToPubkey returns public key through EcRecover
 func EcRecoverToPubkey(hash, sig string) ([]byte, error) {
 	return crypto.Ecrecover(hexutil.MustDecode(hash), hexutil.MustDecode(sig))
 }
 
+// PubkeyToAddress converts public key to ethereum address
 func PubkeyToAddress(p []byte) ethcommon.Address {
 	return ethcommon.BytesToAddress(crypto.Keccak256(p[1:])[12:])
 }
