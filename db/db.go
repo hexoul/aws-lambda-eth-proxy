@@ -1,4 +1,4 @@
-// DB interface for DynamoDB
+// Package db is a DB helper interface for AWS DynamoDB
 package db
 
 import (
@@ -13,25 +13,28 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 )
 
-type DbHelper struct {
+// DynamoDBHelper is a DB helper structure
+type DynamoDBHelper struct {
 	Region string
 	client *dynamodb.DynamoDB
 }
 
 // For singleton
-var instance *DbHelper
+var instance *DynamoDBHelper
 var once sync.Once
 
+// GetInstance returns an instance of DbHelper
 // region is blank or aws-region such as ap-northeast-2
 // In case of blank, use AWS_DEFAULT_REGION as region
-func GetInstance(region string) *DbHelper {
+func GetInstance(region string) *DynamoDBHelper {
 	once.Do(func() {
 		instance = New(region)
 	})
 	return instance
 }
 
-func New(region string) *DbHelper {
+// New makes an instance for DbHelper
+func New(region string) *DynamoDBHelper {
 	// Check if instance is already assigned
 	if instance != nil {
 		return instance
@@ -58,14 +61,15 @@ func New(region string) *DbHelper {
 	}
 
 	// Assign
-	instance = &DbHelper{
+	instance = &DynamoDBHelper{
 		Region: region,
 		client: svc,
 	}
 	return instance
 }
 
-func (d *DbHelper) ListTables() {
+// ListTables lists table names
+func (d *DynamoDBHelper) ListTables() {
 	result, err := d.client.ListTables(&dynamodb.ListTablesInput{})
 	if err != nil {
 		fmt.Println(err)
@@ -77,6 +81,7 @@ func (d *DbHelper) ListTables() {
 	}
 }
 
+// GetItem returns queried result following inputs
 // For table named "tblName" in DynamoDB,
 // Scan target value following propName is propVal
 //   -----------------------------
@@ -85,7 +90,7 @@ func (d *DbHelper) ListTables() {
 //   |  propVal   |  targetVal   |
 //   |   ...      |    ...       |
 //   -----------------------------
-func (d *DbHelper) GetItem(tblName, propName, propVal, targetName string) *dynamodb.ScanOutput {
+func (d *DynamoDBHelper) GetItem(tblName, propName, propVal, targetName string) *dynamodb.ScanOutput {
 	/*
 		result, err := d.client.GetItem(&dynamodb.GetItemInput{
 			TableName: aws.String(tblName),
@@ -116,7 +121,8 @@ func (d *DbHelper) GetItem(tblName, propName, propVal, targetName string) *dynam
 	return result
 }
 
-func (d *DbHelper) UnmarshalMap(in map[string]*dynamodb.AttributeValue, out interface{}) {
+// UnmarshalMap makes output data from DynamoDB output
+func (d *DynamoDBHelper) UnmarshalMap(in map[string]*dynamodb.AttributeValue, out interface{}) {
 	if in == nil {
 		return
 	} else if err := dynamodbattribute.UnmarshalMap(in, &out); err != nil {
