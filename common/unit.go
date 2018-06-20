@@ -1,8 +1,9 @@
-// Common constants such as unit (wei, ether)
+// Package common includes constants such as unit (wei, ether)
 package common
 
 import "math/big"
 
+// UnitStrMap is a map from unit string to value string
 var UnitStrMap = map[string]string{
 	"noether":    "0",
 	"wei":        "1",
@@ -33,6 +34,7 @@ var UnitStrMap = map[string]string{
 	"tether":     "1000000000000000000000000000000",
 }
 
+// UnitIntMap is a map from unit string to value as big int
 var UnitIntMap = map[string]*big.Int{
 	"noether":    big.NewInt(0),
 	"wei":        big.NewInt(1),
@@ -63,6 +65,7 @@ var UnitIntMap = map[string]*big.Int{
 	"tether":     big.NewInt(-1),
 }
 
+// UnitFloatMap is a map from unit string to value as big float
 var UnitFloatMap = map[string]*big.Float{
 	"noether":    big.NewFloat(0),
 	"wei":        big.NewFloat(1),
