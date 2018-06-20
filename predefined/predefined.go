@@ -11,12 +11,12 @@ import (
 
 const Targetnet = rpc.Testnet
 
-func foo(req json.RpcRequest) (json.RpcResponse, error) {
+func foo(req json.RPCRequest) (json.RPCResponse, error) {
 	fmt.Println("foo")
-	return json.RpcResponse{}, nil
+	return json.RPCResponse{}, nil
 }
 
-func getBalance(req json.RpcRequest) (json.RpcResponse, error) {
+func getBalance(req json.RPCRequest) (json.RPCResponse, error) {
 	// Preprocessing
 	var unit string
 	if len(req.Params) > 2 {
@@ -25,10 +25,10 @@ func getBalance(req json.RpcRequest) (json.RpcResponse, error) {
 	}
 
 	// RPC
-	var resp json.RpcResponse
+	var resp json.RPCResponse
 	respBody, err := rpc.GetInstance(Targetnet).DoRpc(req)
 	if err == nil {
-		resp = json.GetRpcResponseFromJson(respBody)
+		resp = json.GetRPCResponseFromJSON(respBody)
 		// Postprocessing
 		if unit != "" {
 			if val, err := web3.FromWei(resp.Result.(string), unit); err == nil {
@@ -40,13 +40,13 @@ func getBalance(req json.RpcRequest) (json.RpcResponse, error) {
 	return resp, err
 }
 
-func Forward(req json.RpcRequest) (json.RpcResponse, error) {
+func Forward(req json.RPCRequest) (json.RPCResponse, error) {
 	for k, v := range predefinedPaths {
 		if k == req.Method {
-			return v.(func(json.RpcRequest) (json.RpcResponse, error))(req)
+			return v.(func(json.RPCRequest) (json.RPCResponse, error))(req)
 		}
 	}
-	return json.RpcResponse{}, fmt.Errorf("predefined NOT FOUND")
+	return json.RPCResponse{}, fmt.Errorf("predefined NOT FOUND")
 }
 
 func Contains(path string) bool {

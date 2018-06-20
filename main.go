@@ -20,14 +20,14 @@ const (
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// Validate RPC request
-	req := json.GetRpcRequestFromJson(request.Body)
+	req := json.GetRPCRequestFromJSON(request.Body)
 	if method := request.QueryStringParameters[ParamFuncName]; method != "" {
 		req.Method = method
 	} else if method := request.PathParameters[ParamFuncName]; method != "" {
 		req.Method = method
 	}
 
-	var resp json.RpcResponse
+	var resp json.RPCResponse
 	var err error
 	if predefined.Contains(req.Method) {
 		// Forward RPC request to predefined function
@@ -37,7 +37,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		respBody, err := rpc.GetInstance(Targetnet).DoRpc(req)
 		if err == nil {
 			// Relay a response from the node
-			resp = json.GetRpcResponseFromJson(respBody)
+			resp = json.GetRPCResponseFromJSON(respBody)
 		}
 	}
 
@@ -45,7 +45,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	if err != nil {
 		// In case of server-side RPC fail
 		fmt.Println(err.Error())
-		resp.Error.Message = err.Error()
+		resp.Error.RPCResponse = err.Error()
 		retCode = 400
 	} else if resp.Error.Code != 0 {
 		// In case of ether-node-side RPC fail

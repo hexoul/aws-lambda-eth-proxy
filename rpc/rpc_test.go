@@ -35,7 +35,7 @@ func TestRpc(t *testing.T) {
 	}
 
 	// Test with RpcRequest param
-	testRpcRequest := json.GetRpcRequestFromJson(testMsg)
+	testRpcRequest := json.GetRPCRequestFromJSON(testMsg)
 	if _, err := r.DoRpc(testRpcRequest); err != nil {
 		t.Errorf("Failed to RPC with RpcRequest: %s", err)
 	}

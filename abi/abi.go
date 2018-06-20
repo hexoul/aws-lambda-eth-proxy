@@ -22,9 +22,8 @@ func Pack(abi abi.ABI, name string, args ...interface{}) (string, error) {
 	data, err := abi.Pack(name, args...)
 	if err != nil {
 		return "", err
-	} else {
-		return hexutil.Encode(data), nil
 	}
+	return hexutil.Encode(data), nil
 }
 
 // Unpack fills output into given ABI
@@ -44,7 +43,7 @@ func Unpack(abi abi.ABI, v interface{}, name string, output string) error {
 }
 
 // Call gets contract value with contract address and name
-func Call(abi abi.ABI, targetNet, to, name string, inputs []interface{}, outputs interface{}) (resp json.RpcResponse, err error) {
+func Call(abi abi.ABI, targetNet, to, name string, inputs []interface{}, outputs interface{}) (resp json.RPCResponse, err error) {
 	data, err := Pack(abi, name, inputs...)
 	if err != nil {
 		return
@@ -56,12 +55,12 @@ func Call(abi abi.ABI, targetNet, to, name string, inputs []interface{}, outputs
 		return
 	}
 
-	resp = json.GetRpcResponseFromJson(respStr)
+	resp = json.GetRPCResponseFromJSON(respStr)
 	return
 }
 
 // SendTransaction calls smart contract with ABI using eth_sendTransaction
-func SendTransaction(abi abi.ABI, targetNet, to, name string, inputs []interface{}, gas int) (resp json.RpcResponse, err error) {
+func SendTransaction(abi abi.ABI, targetNet, to, name string, inputs []interface{}, gas int) (resp json.RPCResponse, err error) {
 	data, err := Pack(abi, name, inputs...)
 	if err != nil {
 		return
@@ -74,12 +73,12 @@ func SendTransaction(abi abi.ABI, targetNet, to, name string, inputs []interface
 		return
 	}
 
-	resp = json.GetRpcResponseFromJson(respStr)
+	resp = json.GetRPCResponseFromJSON(respStr)
 	return
 }
 
 // SendTransactionWithSign calls smart contract with ABI using eth_sendRawTransaction
-func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []interface{}, gasLimit, gasPrice uint64) (resp json.RpcResponse, err error) {
+func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []interface{}, gasLimit, gasPrice uint64) (resp json.RPCResponse, err error) {
 	data, err := abi.Pack(name, inputs...)
 	if err != nil {
 		return
@@ -103,7 +102,7 @@ func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []i
 		return
 	}
 
-	resp = json.GetRpcResponseFromJson(respStr)
+	resp = json.GetRPCResponseFromJSON(respStr)
 	return
 }
 
@@ -121,6 +120,6 @@ func getAbiFromAddress(targetNet, addr string) (abi abi.ABI) {
 		return
 	}
 
-	json.GetRpcResponseFromJson(respStr)
+	json.GetRPCResponseFromJSON(respStr)
 	return
 }

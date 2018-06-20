@@ -1,4 +1,4 @@
-// RPC with ethereum node
+// Package rpc invokes JSON-RPC with ethereum node
 package rpc
 
 import (
@@ -57,12 +57,12 @@ func GetInstance(_netType string) *Rpc {
 		availLen[Testnet] = len(TestnetUrls)
 
 		instance.NetType = _netType
-		netVersion, err := instance.GetChainId()
+		netVersion, err := instance.GetChainID()
 		if err == nil {
-			resp := ethjson.GetRpcResponseFromJson(netVersion)
+			resp := ethjson.GetRPCResponseFromJSON(netVersion)
 			bigInt := new(big.Int)
 			instance.NetVersion, _ = bigInt.SetString(resp.Result.(string), 10)
-			crypto.GetInstance().ChainId = instance.NetVersion
+			crypto.GetInstance().ChainID = instance.NetVersion
 		}
 	})
 	return instance
@@ -145,7 +145,7 @@ func (r *Rpc) DoRpc(req interface{}) (ret string, err error) {
 	case string:
 		msg, _ = req.(string)
 		break
-	case ethjson.RpcRequest:
+	case ethjson.RPCRequest:
 		if marshal, e := json.Marshal(req); e == nil {
 			msg = string(marshal)
 			break
@@ -179,10 +179,10 @@ func (r *Rpc) DoRpc(req interface{}) (ret string, err error) {
 	return
 }
 
-func initRpcRequest(method string) ethjson.RpcRequest {
-	return ethjson.RpcRequest{
+func initRpcRequest(method string) ethjson.RPCRequest {
+	return ethjson.RPCRequest{
 		Jsonrpc: initParamJsonrpc,
-		Id:      initParamId,
+		ID:      initParamId,
 		Method:  method,
 	}
 }
@@ -205,7 +205,7 @@ func (r *Rpc) GetCode(addr string) (string, error) {
 	return r.DoRpc(req)
 }
 
-func (r *Rpc) GetChainId() (string, error) {
+func (r *Rpc) GetChainID() (string, error) {
 	req := initRpcRequest("net_version")
 	return r.DoRpc(req)
 }

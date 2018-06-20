@@ -9,10 +9,10 @@ import (
 )
 
 func TestHandler(t *testing.T) {
-	req := json.RpcRequest{
+	req := json.RPCRequest{
 		Jsonrpc: "2.0",
 		Method:  "eth_getBalance",
-		Id:      1,
+		ID:      1,
 	}
 	req.Params = append(req.Params, "0xeeaf5f87cb85433a0db0fc31863b21d1c8279f7d")
 	req.Params = append(req.Params, "latest")
