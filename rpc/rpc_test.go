@@ -11,7 +11,7 @@ func TestRefreshUrlList(t *testing.T) {
 	initLen := len(TestnetUrls)
 	target := TestnetUrls[0]
 	for i := 0; i < 30; i++ {
-		r.refreshUrlList(target)
+		r.refreshURLList(target)
 	}
 	if (initLen - 1) != availLen[Testnet] {
 		t.Errorf("refreshUrlList is abnormal")
@@ -30,13 +30,13 @@ func TestRpc(t *testing.T) {
 
 	r := GetInstance(Testnet)
 	// Test with string param
-	if _, err := r.DoRpc(testMsg); err != nil {
+	if _, err := r.DoRPC(testMsg); err != nil {
 		t.Errorf("Failed to RPC with string: %s", err)
 	}
 
 	// Test with RpcRequest param
-	testRpcRequest := json.GetRPCRequestFromJSON(testMsg)
-	if _, err := r.DoRpc(testRpcRequest); err != nil {
+	testRPCRequest := json.GetRPCRequestFromJSON(testMsg)
+	if _, err := r.DoRPC(testRPCRequest); err != nil {
 		t.Errorf("Failed to RPC with RpcRequest: %s", err)
 	}
 }
@@ -46,6 +46,6 @@ func BenchmarkRpc(b *testing.B) {
 
 	r := GetInstance(Testnet)
 	for i := 0; i < b.N; i++ {
-		r.DoRpc(testMsg)
+		r.DoRPC(testMsg)
 	}
 }

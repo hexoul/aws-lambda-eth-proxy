@@ -26,7 +26,7 @@ func getBalance(req json.RPCRequest) (json.RPCResponse, error) {
 
 	// RPC
 	var resp json.RPCResponse
-	respBody, err := rpc.GetInstance(Targetnet).DoRpc(req)
+	respBody, err := rpc.GetInstance(Targetnet).DoRPC(req)
 	if err == nil {
 		resp = json.GetRPCResponseFromJSON(respBody)
 		// Postprocessing

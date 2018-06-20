@@ -34,7 +34,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 		resp, err = predefined.Forward(req)
 	} else {
 		// Forward RPC request to Ether node
-		respBody, err := rpc.GetInstance(Targetnet).DoRpc(req)
+		respBody, err := rpc.GetInstance(Targetnet).DoRPC(req)
 		if err == nil {
 			// Relay a response from the node
 			resp = json.GetRPCResponseFromJSON(respBody)
