@@ -37,16 +37,16 @@ var (
 )
 
 func TestGetAbiFromJson(t *testing.T) {
-	_, err := GetAbiFromJson(testabijson2)
+	_, err := GetAbiFromJSON(testabijson2)
 	if err != nil {
-		t.Errorf("Failed to GetAbiFromJson: %s", err)
+		t.Errorf("Failed to GetAbiFromJSON: %s", err)
 	}
 }
 
 func TestPack(t *testing.T) {
-	abi, err := GetAbiFromJson(testabijson2)
+	abi, err := GetAbiFromJSON(testabijson2)
 	if err != nil {
-		t.Errorf("Failed to GetAbiFromJson: %s", err)
+		t.Errorf("Failed to GetAbiFromJSON: %s", err)
 	}
 
 	addr := common.HexToAddress(testaddr[2:])
@@ -58,9 +58,9 @@ func TestPack(t *testing.T) {
 }
 
 func TestCall(t *testing.T) {
-	abi, err := GetAbiFromJson(testabijson)
+	abi, err := GetAbiFromJSON(testabijson)
 	if err != nil {
-		t.Errorf("Failed to GetAbiFromJson")
+		t.Errorf("Failed to GetAbiFromJSON")
 	}
 
 	resp, err := Call(abi, rpc.Testnet, testcontractaddr, "owner", []interface{}{}, 0x1)
@@ -77,9 +77,9 @@ func TestCall(t *testing.T) {
 }
 
 func TestSendTransaction(t *testing.T) {
-	abi, err := GetAbiFromJson(testabijson)
+	abi, err := GetAbiFromJSON(testabijson)
 	if err != nil {
-		t.Errorf("Failed to GetAbiFromJson")
+		t.Errorf("Failed to GetAbiFromJSON")
 	}
 
 	addr := common.HexToAddress(testaddr[2:])
@@ -91,9 +91,9 @@ func TestSendTransaction(t *testing.T) {
 }
 
 func TestSendTransactionWithSign(t *testing.T) {
-	abi, err := GetAbiFromJson(testabijson)
+	abi, err := GetAbiFromJSON(testabijson)
 	if err != nil {
-		t.Errorf("Failed to GetAbiFromJson")
+		t.Errorf("Failed to GetAbiFromJSON")
 	}
 
 	addr := common.HexToAddress(testaddr[2:])
