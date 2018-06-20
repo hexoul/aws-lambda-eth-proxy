@@ -15,9 +15,14 @@ Furthermore it applied IPFS API here to overwhelm limited storage of blockchain.
 # Prerequisite
 0. Go
   - Install at https://golang.org/doc/install
-1. Docker
+1. dep 
+  - Install
+  ```shell
+  brew install dep
+  ```
+2. Docker
   - Install at https://docs.docker.com/install
-2. xgo
+3. xgo
   - because of C compile in go-ethereum, we need improved cross-compiler
   ```shell
   docker pull karalabe/xgo-latest
@@ -57,17 +62,19 @@ godoc -http=:6060
   - If you change port at 1., it should be applied to url
 
 # Reference
-[1] https://github.com/aws/aws-lambda-go
+[1] AWS Lambda Go, https://github.com/aws/aws-lambda-go
 
-[2] https://github.com/ethereum/go-ethereum
+[2] Go ethereum, https://github.com/ethereum/go-ethereum
 
-[3] https://ipfs.io/
+[3] IPFS, https://ipfs.io/
 
-[4] https://github.com/ipfs/go-ipfs-api
+[4] IPFS API, https://github.com/ipfs/go-ipfs-api
 
-[5] https://github.com/ethereum/go-ethereum/wiki/Cross-compiling-Ethereum
+[5] Cross compliling for ethereum, https://github.com/ethereum/go-ethereum/wiki/Cross-compiling-Ethereum
 
-[6] https://github.com/karalabe/xgo
+[6] Xgo, https://github.com/karalabe/xgo
+
+[7] Dep, https://github.com/golang/dep
 
 # License
 MIT
