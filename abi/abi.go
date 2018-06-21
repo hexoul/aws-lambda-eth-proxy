@@ -6,7 +6,6 @@ import (
 	"math/big"
 	"strings"
 
-	unit "github.com/hexoul/aws-lambda-eth-proxy/common"
 	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
 	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
@@ -17,6 +16,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/rlp"
 )
+
+var zero = big.NewInt(0)
 
 // Pack makes packed data with inputs on ABI
 func Pack(abi abi.ABI, name string, args ...interface{}) (string, error) {
@@ -85,9 +86,15 @@ func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []i
 		return
 	}
 
+	// Get TX nonce
 	c := crypto.GetInstance()
-	// TODO: atomic nonce needed about each address
-	tx := types.NewTransaction(0, common.HexToAddress(to), unit.UnitIntMap["noether"], uint64(gasLimit), big.NewInt(int64(gasPrice)), data)
+	r := rpc.GetInstance(targetNet)
+	if c.Txnonce == 0 {
+		c.Txnonce = r.GetTransactionCount(c.Address)
+	}
+
+	// TODO: nonce atomic increase
+	tx := types.NewTransaction(c.Txnonce, common.HexToAddress(to), zero, uint64(gasLimit), big.NewInt(int64(gasPrice)), data)
 	tx, err = c.SignTx(tx)
 	if err != nil {
 		return
@@ -98,7 +105,6 @@ func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []i
 		return
 	}
 
-	r := rpc.GetInstance(targetNet)
 	respStr, err := r.SendRawTransaction(rlpTx)
 	if err != nil {
 		return

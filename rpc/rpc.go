@@ -49,6 +49,7 @@ var (
 	httpFailCnt = make(map[string]int)
 	// NetType => available length of IP list
 	availLen = make(map[string]int)
+	zero     = big.NewInt(0)
 )
 
 // GetInstance returns the instance of Rpc
@@ -60,19 +61,11 @@ func GetInstance(_netType string) *RPC {
 		availLen[Mainnet] = len(MainnetUrls)
 		availLen[Testnet] = len(TestnetUrls)
 
-		bigInt := new(big.Int)
 		instance.NetType = _netType
-		if netVersion, err := instance.GetChainID(); err == nil {
-			resp := ethjson.GetRPCResponseFromJSON(netVersion)
-			instance.NetVersion, _ = bigInt.SetString(resp.Result.(string), 10)
-			crypto.GetInstance().ChainID = instance.NetVersion
-		}
+		instance.NetVersion = instance.GetChainID()
+		crypto.GetInstance().ChainID = instance.NetVersion
 
-		if gasPrice, err := instance.GetGasPrice(); err == nil {
-			resp := ethjson.GetRPCResponseFromJSON(gasPrice)
-			uint64GasPrice, _ := bigInt.SetString(resp.Result.(string)[2:], 16)
-			instance.GasPrice = uint64GasPrice.Uint64()
-		}
+		instance.GasPrice = instance.GetGasPrice()
 	})
 	return instance
 }
@@ -219,23 +212,41 @@ func (r *RPC) GetCode(addr string) (string, error) {
 }
 
 // GetChainID invokes RPC "net_version"
-func (r *RPC) GetChainID() (string, error) {
+func (r *RPC) GetChainID() *big.Int {
 	req := initRPCRequest("net_version")
-	return r.DoRPC(req)
+	if netVersion, err := r.DoRPC(req); err == nil {
+		resp := ethjson.GetRPCResponseFromJSON(netVersion)
+		if chainID, ok := zero.SetString(resp.Result.(string), 10); ok {
+			return chainID
+		}
+	}
+	return nil
 }
 
 // GetGasPrice invokes RPC "eth_gasPrice"
-func (r *RPC) GetGasPrice() (string, error) {
+func (r *RPC) GetGasPrice() uint64 {
 	req := initRPCRequest("eth_gasPrice")
-	return r.DoRPC(req)
+	if gasPrice, err := r.DoRPC(req); err == nil {
+		resp := ethjson.GetRPCResponseFromJSON(gasPrice)
+		if uint64GasPrice, ok := zero.SetString(resp.Result.(string)[2:], 16); ok {
+			return uint64GasPrice.Uint64()
+		}
+	}
+	return 0
 }
 
 // GetTransactionCount invokes RPC "eth_getTransactionCount"
-func (r *RPC) GetTransactionCount(addr string) (string, error) {
+func (r *RPC) GetTransactionCount(addr string) uint64 {
 	req := initRPCRequest("eth_getTransactionCount")
 	req.Params = append(req.Params, addr)
 	req.Params = append(req.Params, "latest")
-	return r.DoRPC(req)
+	if retStr, txCntErr := r.DoRPC(req); txCntErr == nil {
+		ret := ethjson.GetRPCResponseFromJSON(retStr)
+		if txNonce, ok := zero.SetString(ret.Result.(string), 16); ok {
+			return txNonce.Uint64()
+		}
+	}
+	return 0
 }
 
 // SendTransaction invokes RPC "eth_sendTransaction"

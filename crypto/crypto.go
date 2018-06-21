@@ -27,6 +27,7 @@ type Crypto struct {
 	privKey   string
 	Address   string
 	ChainID   *big.Int
+	Txnonce   uint64
 	signer    types.Signer
 }
 
@@ -62,6 +63,7 @@ func GetInstance() *Crypto {
 			secretKey: dbSecretKey,
 			nonce:     dbNonce,
 			privKey:   nPrivKey,
+			Txnonce:   0,
 		}
 	})
 	return instance
