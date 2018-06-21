@@ -15,8 +15,8 @@ type RPCRequest struct {
 
 // RPCError is a interface for JSON-RPC error
 type RPCError struct {
-	Code        int32  `json:"code,omitempty"`
-	RPCResponse string `json:"message,omitempty"`
+	Code    int32  `json:"code,omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
 // RPCResponse is a interface for JSON-RPC response
@@ -24,7 +24,7 @@ type RPCResponse struct {
 	Jsonrpc string      `json:"jsonrpc"`
 	ID      int32       `json:"id"`
 	Result  interface{} `json:"result,omitempty"`
-	Error   RPCError    `json:"error,omitempty"`
+	Error   *RPCError   `json:"error,omitempty"`
 }
 
 // GetRPCRequestFromJSON returns RPCRequest struct from JSON
