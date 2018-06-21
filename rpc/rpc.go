@@ -24,6 +24,7 @@ type RPC struct {
 	NetType    string
 	NetVersion *big.Int
 	client     *http.Client
+	GasPrice   uint64
 }
 
 const (
@@ -59,13 +60,18 @@ func GetInstance(_netType string) *RPC {
 		availLen[Mainnet] = len(MainnetUrls)
 		availLen[Testnet] = len(TestnetUrls)
 
+		bigInt := new(big.Int)
 		instance.NetType = _netType
-		netVersion, err := instance.GetChainID()
-		if err == nil {
+		if netVersion, err := instance.GetChainID(); err == nil {
 			resp := ethjson.GetRPCResponseFromJSON(netVersion)
-			bigInt := new(big.Int)
 			instance.NetVersion, _ = bigInt.SetString(resp.Result.(string), 10)
 			crypto.GetInstance().ChainID = instance.NetVersion
+		}
+
+		if gasPrice, err := instance.GetGasPrice(); err == nil {
+			resp := ethjson.GetRPCResponseFromJSON(gasPrice)
+			uint64GasPrice, _ := bigInt.SetString(resp.Result.(string)[2:], 16)
+			instance.GasPrice = uint64GasPrice.Uint64()
 		}
 	})
 	return instance
@@ -215,6 +221,20 @@ func (r *RPC) GetCode(addr string) (string, error) {
 // GetChainID invokes RPC "net_version"
 func (r *RPC) GetChainID() (string, error) {
 	req := initRPCRequest("net_version")
+	return r.DoRPC(req)
+}
+
+// GetGasPrice invokes RPC "eth_gasPrice"
+func (r *RPC) GetGasPrice() (string, error) {
+	req := initRPCRequest("eth_gasPrice")
+	return r.DoRPC(req)
+}
+
+// GetTransactionCount invokes RPC "eth_getTransactionCount"
+func (r *RPC) GetTransactionCount(addr string) (string, error) {
+	req := initRPCRequest("eth_getTransactionCount")
+	req.Params = append(req.Params, addr)
+	req.Params = append(req.Params, "latest")
 	return r.DoRPC(req)
 }
 
