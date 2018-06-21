@@ -9,13 +9,13 @@ import (
 )
 
 const (
-	shellUrl    = "localhost:5001"
+	shellURL    = "localhost:5001"
 	exampleHash = "Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u"
 )
 
 func TestCat(t *testing.T) {
 	is := is.New(t)
-	s := New(shellUrl)
+	s := GetInstance(shellURL)
 
 	ret := s.Cat(exampleHash)
 	is.NotNil(ret)
@@ -27,7 +27,7 @@ func TestCat(t *testing.T) {
 
 func TestAdd(t *testing.T) {
 	is := is.New(t)
-	s := New(shellUrl)
+	s := GetInstance(shellURL)
 
 	mhash, err := s.Add("Hello IPFS Shell tests")
 	is.Nil(err)
@@ -36,7 +36,7 @@ func TestAdd(t *testing.T) {
 
 func TestAddnCat(t *testing.T) {
 	is := is.New(t)
-	s := New(shellUrl)
+	s := GetInstance(shellURL)
 
 	testMsg := "TestTestTest"
 	mhash, err := s.Add(testMsg)

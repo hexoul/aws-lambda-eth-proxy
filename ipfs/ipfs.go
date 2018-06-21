@@ -1,25 +1,34 @@
-// IPFS interface
+// Package ipfs is a IPFS interface
+//
+// https://ipfs.io/docs/
 package ipfs
 
 import (
 	"bytes"
-	_ "crypto/md5"
 	"io/ioutil"
+	"sync"
 
 	"github.com/ipfs/go-ipfs-api"
 )
 
+// Ipfs is a IPFS API manager
 type Ipfs struct {
 	s *shell.Shell
 }
 
-func New(url string) *Ipfs {
+// For singleton
+var instance *Ipfs
+var once sync.Once
+
+// GetInstance returns an instance of Ipfs
+func GetInstance(url string) *Ipfs {
 	ns := shell.NewShell(url)
 	return &Ipfs{
 		s: ns,
 	}
 }
 
+// Cat returns data from IPFS with path(file hash)
 func (ipfs *Ipfs) Cat(path string) (ret string) {
 	rc, err := ipfs.s.Cat(path)
 	if err != nil {
@@ -32,6 +41,7 @@ func (ipfs *Ipfs) Cat(path string) (ret string) {
 	return
 }
 
+// Add returns path(file hash) after adding data to IPFS
 func (ipfs *Ipfs) Add(data string) (string, error) {
 	ndata := bytes.NewBufferString(data)
 	return ipfs.s.Add(ndata)
