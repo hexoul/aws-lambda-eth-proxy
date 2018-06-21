@@ -1,4 +1,4 @@
-// Converted golang layer from web3.js
+// Package web3 is converted golang layer from web3.js
 package web3
 
 import (
@@ -9,6 +9,7 @@ import (
 	"github.com/hexoul/aws-lambda-eth-proxy/common"
 )
 
+// GetValueOfUnit returns a value about given unit
 func GetValueOfUnit(unit string) (val *big.Float, err string) {
 	val = common.UnitFloatMap[unit]
 	if val == nil {
@@ -37,6 +38,7 @@ func getBigFloat(number string) *big.Float {
 	return val
 }
 
+// FromWei applys unit to wei
 func FromWei(number, unit string) (ret string, err error) {
 	// Validate unit
 	unitVal, errStr := GetValueOfUnit(unit)
@@ -59,6 +61,7 @@ func FromWei(number, unit string) (ret string, err error) {
 	return
 }
 
+// ToWei gets wei from given value and unit
 func ToWei(number, unit string) (ret string, err error) {
 	// Validate unit
 	unitVal, errStr := GetValueOfUnit(unit)

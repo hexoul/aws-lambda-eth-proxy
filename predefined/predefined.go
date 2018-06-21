@@ -1,4 +1,4 @@
-// Predefined functions for RPC request
+// Package predefined manages predefined functions for RPC request
 package predefined
 
 import (
@@ -9,13 +9,16 @@ import (
 	"github.com/hexoul/aws-lambda-eth-proxy/web3"
 )
 
+// Targetnet indicates target network
 const Targetnet = rpc.Testnet
 
+// Sample
 func foo(req json.RPCRequest) (json.RPCResponse, error) {
 	fmt.Println("foo")
 	return json.RPCResponse{}, nil
 }
 
+// getBalance is a wrapper to support fromWei for eth_getBalance
 func getBalance(req json.RPCRequest) (json.RPCResponse, error) {
 	// Preprocessing
 	var unit string
@@ -40,6 +43,7 @@ func getBalance(req json.RPCRequest) (json.RPCResponse, error) {
 	return resp, err
 }
 
+// Forward delivers RPCRequest to predefined function and returns that
 func Forward(req json.RPCRequest) (json.RPCResponse, error) {
 	for k, v := range predefinedPaths {
 		if k == req.Method {
@@ -49,8 +53,9 @@ func Forward(req json.RPCRequest) (json.RPCResponse, error) {
 	return json.RPCResponse{}, fmt.Errorf("predefined NOT FOUND")
 }
 
+// Contains check if given path is in predefined or not
 func Contains(path string) bool {
-	for k, _ := range predefinedPaths {
+	for k := range predefinedPaths {
 		if k == path {
 			return true
 		}
