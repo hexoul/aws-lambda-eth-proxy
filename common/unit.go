@@ -1,7 +1,10 @@
 // Package common includes constants such as unit (wei, ether)
 package common
 
-import "math/big"
+import (
+	"math/big"
+	"math/rand"
+)
 
 // UnitStrMap is a map from unit string to value string
 var UnitStrMap = map[string]string{
@@ -94,4 +97,9 @@ var UnitFloatMap = map[string]*big.Float{
 	"mether":     big.NewFloat(1000000000000000000000000),
 	"gether":     big.NewFloat(1000000000000000000000000000),
 	"tether":     big.NewFloat(1000000000000000000000000000000),
+}
+
+// RandomUint64 generates random uint64
+func RandomUint64() uint64 {
+	return uint64(rand.Uint32())<<32 + uint64(rand.Uint32())
 }
