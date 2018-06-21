@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"strings"
 
+	unit "github.com/hexoul/aws-lambda-eth-proxy/common"
 	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
 	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
@@ -43,7 +44,7 @@ func Unpack(abi abi.ABI, v interface{}, name string, output string) error {
 }
 
 // Call gets contract value with contract address and name
-func Call(abi abi.ABI, targetNet, to, name string, inputs []interface{}, outputs interface{}) (resp json.RPCResponse, err error) {
+func Call(abi abi.ABI, targetNet, to, name string, inputs []interface{}) (resp json.RPCResponse, err error) {
 	data, err := Pack(abi, name, inputs...)
 	if err != nil {
 		return
@@ -86,7 +87,7 @@ func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []i
 
 	c := crypto.GetInstance()
 	// TODO: atomic nonce needed about each address
-	tx := types.NewTransaction(0, common.HexToAddress(to), big.NewInt(0), uint64(gasLimit), big.NewInt(int64(gasPrice)), data)
+	tx := types.NewTransaction(0, common.HexToAddress(to), unit.UnitIntMap["noether"], uint64(gasLimit), big.NewInt(int64(gasPrice)), data)
 	tx, err = c.SignTx(tx)
 	if err != nil {
 		return

@@ -63,7 +63,7 @@ func TestCall(t *testing.T) {
 		t.Errorf("Failed to GetAbiFromJSON")
 	}
 
-	resp, err := Call(abi, rpc.Testnet, testcontractaddr, "owner", []interface{}{}, 0x1)
+	resp, err := Call(abi, rpc.Testnet, testcontractaddr, "owner", []interface{}{})
 	if err != nil || resp.Result == "" || resp.Error.Code != 0 {
 		t.Errorf("Failed to Call")
 	}
