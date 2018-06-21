@@ -4,6 +4,7 @@ package abi
 import (
 	"encoding/hex"
 	"math/big"
+	"math/rand"
 	"strings"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
@@ -77,6 +78,11 @@ func SendTransaction(abi abi.ABI, targetNet, to, name string, inputs []interface
 	return
 }
 
+// Uint64 generates random uint64
+func Uint64() uint64 {
+	return uint64(rand.Uint32())<<32 + uint64(rand.Uint32())
+}
+
 // SendTransactionWithSign calls smart contract with ABI using eth_sendRawTransaction
 func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []interface{}, gasLimit, gasPrice uint64) (resp json.RPCResponse, err error) {
 	data, err := abi.Pack(name, inputs...)
@@ -85,7 +91,7 @@ func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []i
 	}
 
 	c := crypto.GetInstance()
-	tx := types.NewTransaction(0, common.HexToAddress(to), big.NewInt(0), uint64(gasLimit), big.NewInt(int64(gasPrice)), data)
+	tx := types.NewTransaction(Uint64(), common.HexToAddress(to), big.NewInt(0), uint64(gasLimit), big.NewInt(int64(gasPrice)), data)
 	tx, err = c.SignTx(tx)
 	if err != nil {
 		return
