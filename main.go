@@ -14,10 +14,13 @@ import (
 )
 
 const (
+	// ParamFuncName is a name indicating function's
 	ParamFuncName = "func"
-	Targetnet     = rpc.Testnet
+	// Targetnet indicates target network
+	Targetnet = rpc.Testnet
 )
 
+// Handler handles APIGatewayProxyRequest as JSON-RPC request
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// Validate RPC request
 	req := json.GetRPCRequestFromJSON(request.Body)
@@ -45,7 +48,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 	if err != nil {
 		// In case of server-side RPC fail
 		fmt.Println(err.Error())
-		resp.Error.RPCResponse = err.Error()
+		resp.Error.Message = err.Error()
 		retCode = 400
 	} else if resp.Error.Code != 0 {
 		// In case of ether-node-side RPC fail
@@ -55,5 +58,6 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 }
 
 func main() {
+	predefined.Targetnet = Targetnet
 	lambda.Start(Handler)
 }

@@ -10,7 +10,7 @@ import (
 )
 
 // Targetnet indicates target network
-const Targetnet = rpc.Testnet
+var Targetnet string
 
 // Sample
 func foo(req json.RPCRequest) (json.RPCResponse, error) {
