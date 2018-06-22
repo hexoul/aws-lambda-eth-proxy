@@ -1,4 +1,4 @@
-// Package common includes constants such as unit (wei, ether)
+// Package common includes utility and constants such as unit (wei, ether)
 package common
 
 // FindOffsetNBase finds offset and base to parse string to int

@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"math/big"
 	"strings"
+	"sync"
+	"sync/atomic"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
@@ -17,7 +19,10 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 )
 
-var zero = big.NewInt(0)
+var (
+	zero  = big.NewInt(0)
+	mutex = &sync.Mutex{}
+)
 
 // Pack makes packed data with inputs on ABI
 func Pack(abi abi.ABI, name string, args ...interface{}) (string, error) {
@@ -89,12 +94,13 @@ func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []i
 	// Get TX nonce
 	c := crypto.GetInstance()
 	r := rpc.GetInstance(targetNet)
+	mutex.Lock()
+	defer mutex.Unlock()
 	if c.Txnonce == 0 {
 		c.Txnonce = r.GetTransactionCount(c.Address)
 	}
-
-	// TODO: nonce atomic increase
-	tx := types.NewTransaction(c.Txnonce, common.HexToAddress(to), zero, uint64(gasLimit), big.NewInt(int64(gasPrice)), data)
+	nonce := atomic.LoadUint64(&c.Txnonce)
+	tx := types.NewTransaction(nonce, common.HexToAddress(to), zero, uint64(gasLimit), big.NewInt(int64(gasPrice)), data)
 	tx, err = c.SignTx(tx)
 	if err != nil {
 		return
@@ -111,6 +117,7 @@ func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []i
 	}
 
 	resp = json.GetRPCResponseFromJSON(respStr)
+	atomic.AddUint64(&c.Txnonce, 1)
 	return
 }
 

@@ -81,6 +81,7 @@ func (c *Crypto) Sign(msg string) string {
 	ret := hexutil.Encode(sig)
 	if c.Address == "" {
 		c.Address, _ = EcRecover(msg, ret)
+		fmt.Printf("Crypto address is set to %s\n", c.Address)
 	}
 	return ret
 }
