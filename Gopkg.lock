@@ -74,6 +74,7 @@
 [[projects]]
   name = "github.com/ethereum/go-ethereum"
   packages = [
+    ".",
     "accounts/abi",
     "common",
     "common/hexutil",
@@ -82,11 +83,14 @@
     "crypto",
     "crypto/secp256k1",
     "crypto/sha3",
+    "ethclient",
     "ethdb",
     "log",
     "metrics",
+    "p2p/netutil",
     "params",
     "rlp",
+    "rpc",
     "trie"
   ]
   revision = "dea1ce052a10cd7d401a5c04f83f371a06fe293c"
@@ -224,6 +228,12 @@
   version = "v1.0.2"
 
 [[projects]]
+  name = "github.com/rs/cors"
+  packages = ["."]
+  revision = "ca016a06a5753f8ba03029c0aa5e54afb1bf713f"
+  version = "v1.4.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/syndtr/goleveldb"
   packages = [
@@ -257,7 +267,10 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context"]
+  packages = [
+    "context",
+    "websocket"
+  ]
   revision = "dfa909b99c79129e1100513e5cd36307665e5723"
 
 [[projects]]
@@ -270,14 +283,26 @@
   revision = "c11f84a56e43e20a78cee75a7c034031ecf57d1f"
 
 [[projects]]
+  name = "gopkg.in/fatih/set.v0"
+  packages = ["."]
+  revision = "57907de300222151a123d29255ed17f5ed43fad3"
+  version = "v0.1.0"
+
+[[projects]]
   branch = "v2"
   name = "gopkg.in/karalabe/cookiejar.v2"
   packages = ["collections/prque"]
   revision = "8dcd6a7f4951f6ff3ee9cbb919a06d8925822e57"
 
+[[projects]]
+  branch = "v2"
+  name = "gopkg.in/natefinch/npipe.v2"
+  packages = ["."]
+  revision = "c1b8fa8bdccecb0b8db834ee0b92fdbcfa606dd6"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4425c0b303b9b8204d734528e6e32e1389b016ce1574cf5dcd72aa1c89760dd9"
+  inputs-digest = "ed966ffb87050209451398e01a594900395eac913aab27d7900a6c1e2ca02edb"
   solver-name = "gps-cdcl"
   solver-version = 1
