@@ -44,6 +44,12 @@ type kv struct {
 func TestGetPrivKey(t *testing.T) {
 }
 
+func TestGetDummy(t *testing.T) {
+	c := GetDummy()
+	if c.Address == "" {
+		t.Errorf("Failed to ecrecover in dummy")
+	}
+}
 func TestDeriveShaFromBytes(t *testing.T) {
 	var txs []common.Hash
 	raws := [][]byte{testsig}

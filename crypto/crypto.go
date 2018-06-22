@@ -65,6 +65,7 @@ func GetInstance() *Crypto {
 			privKey:   nPrivKey,
 			Txnonce:   0,
 		}
+		instance.Sign("0xabcdef")
 	})
 	return instance
 }
