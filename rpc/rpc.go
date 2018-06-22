@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hexoul/aws-lambda-eth-proxy/common"
 	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	ethjson "github.com/hexoul/aws-lambda-eth-proxy/json"
 
@@ -216,7 +217,8 @@ func (r *RPC) GetChainID() *big.Int {
 	req := initRPCRequest("net_version")
 	if netVersion, err := r.DoRPC(req); err == nil {
 		resp := ethjson.GetRPCResponseFromJSON(netVersion)
-		if chainID, ok := zero.SetString(resp.Result.(string), 10); ok {
+		offset, base := common.FindOffsetNBase(resp.Result.(string))
+		if chainID, ok := zero.SetString(resp.Result.(string)[offset:], base); ok {
 			return chainID
 		}
 	}
@@ -228,7 +230,8 @@ func (r *RPC) GetGasPrice() uint64 {
 	req := initRPCRequest("eth_gasPrice")
 	if gasPrice, err := r.DoRPC(req); err == nil {
 		resp := ethjson.GetRPCResponseFromJSON(gasPrice)
-		if uint64GasPrice, ok := zero.SetString(resp.Result.(string)[2:], 16); ok {
+		offset, base := common.FindOffsetNBase(resp.Result.(string))
+		if uint64GasPrice, ok := zero.SetString(resp.Result.(string)[offset:], base); ok {
 			return uint64GasPrice.Uint64()
 		}
 	}
@@ -241,8 +244,9 @@ func (r *RPC) GetTransactionCount(addr string) uint64 {
 	req.Params = append(req.Params, addr)
 	req.Params = append(req.Params, "latest")
 	if retStr, txCntErr := r.DoRPC(req); txCntErr == nil {
-		ret := ethjson.GetRPCResponseFromJSON(retStr)
-		if txNonce, ok := zero.SetString(ret.Result.(string), 16); ok {
+		resp := ethjson.GetRPCResponseFromJSON(retStr)
+		offset, base := common.FindOffsetNBase(resp.Result.(string))
+		if txNonce, ok := zero.SetString(resp.Result.(string)[offset:], base); ok {
 			return txNonce.Uint64()
 		}
 	}

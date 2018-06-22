@@ -1,4 +1,3 @@
-// Package common includes constants such as unit (wei, ether)
 package common
 
 import (
