@@ -117,7 +117,9 @@ func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []i
 	}
 
 	resp = json.GetRPCResponseFromJSON(respStr)
-	atomic.AddUint64(&c.Txnonce, 1)
+	if resp.Error == nil {
+		atomic.AddUint64(&c.Txnonce, 1)
+	}
 	return
 }
 

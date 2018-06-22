@@ -53,8 +53,10 @@ func GetInstance() *Crypto {
 		dbNonce := getConfigFromDB(DbNoncePropName)
 		dbPrivKey := getConfigFromDB(DbPrivKeyPropName)
 
+		bSuccess := false
 		var nPrivKey string
 		if dbSecretKey != "" && dbNonce != "" && dbPrivKey != "" {
+			bSuccess = true
 			bNonce, _ := hex.DecodeString(dbNonce)
 			nPrivKey = DecryptAes(dbPrivKey, dbSecretKey, bNonce)
 		}
@@ -65,7 +67,9 @@ func GetInstance() *Crypto {
 			privKey:   nPrivKey,
 			Txnonce:   0,
 		}
-		instance.Sign("0xabcdef")
+		if bSuccess {
+			instance.Sign("0xabcdef")
+		}
 	})
 	return instance
 }

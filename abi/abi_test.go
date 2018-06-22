@@ -64,7 +64,7 @@ func TestCall(t *testing.T) {
 	}
 
 	resp, err := Call(abi, rpc.Testnet, testcontractaddr, "owner", []interface{}{})
-	if err != nil || resp.Result == "" || resp.Error.Code != 0 {
+	if err != nil || resp.Result == "" || resp.Error == nil || resp.Error.Code != 0 {
 		t.Errorf("Failed to Call")
 	}
 	t.Logf("%s", resp.String())
@@ -84,7 +84,7 @@ func TestSendTransaction(t *testing.T) {
 
 	addr := common.HexToAddress(testaddr[2:])
 	resp, err := DummySendTransaction(abi, rpc.Testnet, testcontractaddr, "transferOwnership", []interface{}{addr}, 0x1)
-	if err != nil || resp.Result == "" || resp.Error.Code != 0 {
+	if err != nil || resp.Result == "" || resp.Error == nil || resp.Error.Code != 0 {
 		t.Errorf("Failed to SendTransaction")
 	}
 	t.Logf("%s", resp.String())
@@ -97,8 +97,8 @@ func TestSendTransactionWithSign(t *testing.T) {
 	}
 
 	addr := common.HexToAddress(testaddr[2:])
-	resp, err := DummySendTransactionWithSign(abi, rpc.Testnet, testcontractaddr, "transferOwnership", []interface{}{addr}, 0x1, 0x1)
-	if err != nil || resp.Result == "" || resp.Error.Code != 0 {
+	resp, err := DummySendTransactionWithSign(abi, rpc.Testnet, testcontractaddr, "transferOwnership", []interface{}{addr}, 0xffff, 0x1)
+	if err != nil || resp.Result == "" || resp.Error == nil || resp.Error.Code != 0 {
 		t.Errorf("Failed to SendTransactionWithSign")
 	}
 	t.Logf("%s", resp.String())
