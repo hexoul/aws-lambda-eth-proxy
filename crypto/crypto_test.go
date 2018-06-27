@@ -5,8 +5,10 @@ import (
 	"crypto/md5"
 	crand "crypto/rand"
 	"encoding/hex"
+	"io/ioutil"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -42,6 +44,21 @@ type kv struct {
 }
 
 func TestGetPrivKey(t *testing.T) {
+	file := "test/testkey"
+	keyjson, err := ioutil.ReadFile(file)
+	if err != nil {
+		t.Fatalf("Failed to load key file %s", err)
+	}
+	key, err := keystore.DecryptKey(keyjson, "")
+	if err != nil {
+		t.Fatalf("Failed to decrypt private key %s", err)
+	}
+	privkey := hex.EncodeToString(crypto.FromECDSA(key.PrivateKey))
+	t.Logf("%s", privkey)
+	_, err = crypto.HexToECDSA(privkey)
+	if err != nil {
+		t.Fatalf("Failed to get ECDSA from private key %s", err)
+	}
 }
 
 func TestGetDummy(t *testing.T) {

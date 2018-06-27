@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/hexoul/aws-lambda-eth-proxy/json"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/hexoul/aws-lambda-eth-proxy/json"
 )
 
 func TestEthClient(t *testing.T) {
