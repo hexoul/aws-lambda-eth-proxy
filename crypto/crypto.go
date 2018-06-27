@@ -11,6 +11,7 @@ import (
 	"io"
 	"io/ioutil"
 	"math/big"
+	"os"
 	"sync"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/common"
@@ -43,14 +44,29 @@ const (
 	DbNoncePropName = "nonce"
 	// DbKeyJSONPropName is DB column name about key json
 	DbKeyJSONPropName = "key_json"
+	// Passphrase means passphrase used to decrypt keystore
+	Passphrase = "passphrase"
+	// Path means a location of keyjson in file system
+	Path = "key_path"
 )
 
 // GetInstance returns pointer of Crypto instance
 // Because DB operations are needed for Crypto initiation,
 // Crypto is designed as singleton to reduce the number of DB operation units used
 func GetInstance() *Crypto {
+	if os.Getenv(Path) == "" && os.Getenv(Passphrase) == "" {
+		return instance
+	}
+
 	once.Do(func() {
-		privkey, addr := getPrivateKeyFromDB("")
+		var privkey *ecdsa.PrivateKey
+		var addr string
+		if os.Getenv(Path) == "" {
+			privkey, addr = getPrivateKeyFromDB(os.Getenv(Passphrase))
+		} else {
+			privkey, addr = getPrivateKeyFromFile(os.Getenv(Path), os.Getenv(Passphrase))
+		}
+		//fmt.Printf("privkey %s, addr: %s\n", hex.EncodeToString(crypto.FromECDSA(privkey)), addr)
 		instance = &Crypto{
 			privKey: privkey,
 			Address: addr,

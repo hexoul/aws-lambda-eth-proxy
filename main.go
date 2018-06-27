@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	_ "github.com/hexoul/aws-lambda-eth-proxy/crypto"
+	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
 	"github.com/hexoul/aws-lambda-eth-proxy/predefined"
 	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
@@ -62,5 +62,6 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 
 func main() {
 	predefined.Targetnet = Targetnet
+	crypto.GetInstance()
 	lambda.Start(Handler)
 }

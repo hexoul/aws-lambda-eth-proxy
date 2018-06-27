@@ -1,12 +1,22 @@
 package main
 
 import (
+	"flag"
+	"os"
 	"testing"
 
+	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
 
 	"github.com/aws/aws-lambda-go/events"
 )
+
+func TestMain(t *testing.T) {
+	os.Setenv(crypto.Passphrase, "")
+	os.Setenv(crypto.Path, "crypto/test/testkey")
+	flag.Parse()
+	main()
+}
 
 func TestHandler(t *testing.T) {
 	req := json.RPCRequest{
