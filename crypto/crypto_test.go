@@ -32,10 +32,12 @@ var (
 
 	testmsgraw3 = "0xdeadbeaf"
 	testsigraw3 = "0xfb7e213c96e8445737c7fc15cc3674553a4a0c9e4e861e32ad8edbffdae61b1c08aa6bd56db69db045a0778f828e5fb5b41a461fdf2b06a576229784b345eb5b1b"
+	testsigraw4 = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+	testsig4    = hexutil.MustDecode(testsigraw4)
 	testaddr    = "0xd396348325532a21ab2b01aeee1499a713453e7c"
 
 	testprivhex = "289c2857d4598e37fb9647507e47a309d6133539bf21a8b9cb6df88fd5232032"
-	testaddr2   = "0xa9be5a5c3c1862f378409d0fedf2e517a47ac4f2"
+	testaddr2   = "0x970e8128ab834e8eac17ab8e3812f010678cf791"
 )
 
 type kv struct {
@@ -43,7 +45,7 @@ type kv struct {
 	t    bool
 }
 
-func TestGetPrivKey(t *testing.T) {
+func TestGetPrivKeyFromFile(t *testing.T) {
 	file := "test/testkey"
 	keyjson, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -54,7 +56,20 @@ func TestGetPrivKey(t *testing.T) {
 		t.Fatalf("Failed to decrypt private key %s", err)
 	}
 	privkey := hex.EncodeToString(crypto.FromECDSA(key.PrivateKey))
-	t.Logf("%s", privkey)
+	_, err = crypto.HexToECDSA(privkey)
+	if err != nil {
+		t.Fatalf("Failed to get ECDSA from private key %s", err)
+	}
+}
+
+func TestGetPrivKeyFromString(t *testing.T) {
+	text := "{\"address\":\"ed56062123b0301a9a642f85f2711581bec8d79d\",\"crypto\":{\"cipher\":\"aes-128-ctr\",\"ciphertext\":\"5dd323c7519c02a271cd55aebc32716e3678c162139bad494937615efb7d0de7\",\"cipherparams\":{\"iv\":\"d10b75f4f4195604cef0d959665764fb\"},\"kdf\":\"scrypt\",\"kdfparams\":{\"dklen\":32,\"n\":262144,\"p\":1,\"r\":8,\"salt\":\"9939cc8fb028eea1a24aaa2c96e92c4c6ad7f229bb9d270e12d8d158ba0391b1\"},\"mac\":\"e03f9895983210674528df0c9b4b5c38721ad4c82728e4f3c34badf188b452bf\"},\"id\":\"c20aee40-e155-497e-876c-8f9bd45da819\",\"version\":3}"
+	keyjson := []byte(text)
+	key, err := keystore.DecryptKey(keyjson, "")
+	if err != nil {
+		t.Fatalf("Failed to decrypt private key %s", err)
+	}
+	privkey := hex.EncodeToString(crypto.FromECDSA(key.PrivateKey))
 	_, err = crypto.HexToECDSA(privkey)
 	if err != nil {
 		t.Fatalf("Failed to get ECDSA from private key %s", err)
@@ -129,11 +144,15 @@ func TestProofRandomTrie(t *testing.T) {
 
 func TestSign(t *testing.T) {
 	key, err := crypto.HexToECDSA(testprivhex)
-	sig, err := Sign(testmsgraw2[2:], key)
+	if err != nil {
+		t.Fatalf("Failed to get key %s", err)
+	}
+	msg := "test"
+	sig, err := Sign(msg, key)
 	if err != nil {
 		t.Errorf("Failed to sign %s", err)
 	}
-	addr, ecErr := EcRecover(testmsgraw2, hexutil.Encode(sig))
+	addr, ecErr := EcRecover(hexutil.Encode(crypto.Keccak256([]byte(msg))), hexutil.Encode(sig))
 	if ecErr != nil {
 		t.Errorf("Failed to sign, ecrecover error %s", ecErr)
 	} else if addr != testaddr2 {

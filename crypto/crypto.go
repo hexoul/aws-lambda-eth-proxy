@@ -9,12 +9,14 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"math/big"
 	"sync"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/common"
 	"github.com/hexoul/aws-lambda-eth-proxy/db"
 
+	"github.com/ethereum/go-ethereum/accounts/keystore"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,13 +25,11 @@ import (
 
 // Crypto manager
 type Crypto struct {
-	secretKey string
-	nonce     string
-	privKey   *ecdsa.PrivateKey
-	Address   string
-	ChainID   *big.Int
-	Txnonce   uint64
-	signer    types.Signer
+	privKey *ecdsa.PrivateKey
+	Address string
+	ChainID *big.Int
+	Txnonce uint64
+	signer  types.Signer
 }
 
 // For singleton
@@ -41,8 +41,8 @@ const (
 	DbSecretKeyPropName = "secret_key"
 	// DbNoncePropName is DB column name about nonce
 	DbNoncePropName = "nonce"
-	// DbPrivKeyPropName is DB column name about private key
-	DbPrivKeyPropName = "priv_key"
+	// DbKeyJSONPropName is DB column name about key json
+	DbKeyJSONPropName = "key_json"
 )
 
 // GetInstance returns pointer of Crypto instance
@@ -50,36 +50,44 @@ const (
 // Crypto is designed as singleton to reduce the number of DB operation units used
 func GetInstance() *Crypto {
 	once.Do(func() {
-		dbSecretKey := getConfigFromDB(DbSecretKeyPropName)
-		dbNonce := getConfigFromDB(DbNoncePropName)
-		dbPrivKey := getConfigFromDB(DbPrivKeyPropName)
-
-		bSuccess := false
-		var ecdsaPrivKey *ecdsa.PrivateKey
-		if dbSecretKey != "" && dbNonce != "" && dbPrivKey != "" {
-			bSuccess = true
-			bNonce, _ := hex.DecodeString(dbNonce)
-			nPrivKey := DecryptAes(dbPrivKey, dbSecretKey, bNonce)
-			ecdsaPrivKey, _ = crypto.HexToECDSA(nPrivKey)
-		}
-
+		privkey, addr := getPrivateKeyFromDB("")
 		instance = &Crypto{
-			secretKey: dbSecretKey,
-			nonce:     dbNonce,
-			privKey:   ecdsaPrivKey,
-		}
-		if bSuccess {
-			instance.Sign("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
+			privKey: privkey,
+			Address: addr,
 		}
 	})
 	return instance
 }
 
-func getPrivKeyFromFile(keyfile string) {
-	_, err := crypto.LoadECDSA(keyfile)
+// getPrivateKeyFromDB returns private key and address from DB
+func getPrivateKeyFromDB(passphrase string) (privkey *ecdsa.PrivateKey, addr string) {
+	dbSecretKey := getConfigFromDB(DbSecretKeyPropName)
+	dbNonce := getConfigFromDB(DbNoncePropName)
+	dbKeyJSON := getConfigFromDB(DbKeyJSONPropName)
+	if dbSecretKey == "" && dbNonce == "" && dbKeyJSON == "" {
+		return
+	}
+
+	bNonce, _ := hex.DecodeString(dbNonce)
+	keyjson := DecryptAes(dbKeyJSON, dbSecretKey, bNonce)
+	key, err := keystore.DecryptKey([]byte(keyjson), passphrase)
 	if err != nil {
 		return
 	}
+	return key.PrivateKey, key.Address.String()
+}
+
+// getPrivateKeyFromFile returns private key and address from file
+func getPrivateKeyFromFile(filepath, passphrase string) (privkey *ecdsa.PrivateKey, addr string) {
+	keyjson, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		return
+	}
+	key, err := keystore.DecryptKey(keyjson, passphrase)
+	if err != nil {
+		return
+	}
+	return key.PrivateKey, key.Address.String()
 }
 
 // Sign returns signed message using own private key
@@ -92,7 +100,7 @@ func (c *Crypto) Sign(msg string) string {
 
 	ret := hexutil.Encode(sig)
 	if c.Address == "" {
-		c.Address, _ = EcRecover(msg, ret)
+		c.Address, _ = EcRecover(hexutil.Encode(crypto.Keccak256([]byte(msg))), ret)
 		fmt.Printf("Crypto address is set to %s\n", c.Address)
 	}
 	return ret
