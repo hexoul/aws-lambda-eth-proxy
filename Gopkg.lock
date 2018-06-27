@@ -12,6 +12,12 @@
   revision = "5312a61534124124185d41f09206b9fef1d88403"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/aristanetworks/goarista"
+  packages = ["monotime"]
+  revision = "c8478dff1cfdd0d7aa3ff5076dbd37d7a40e1d95"
+
+[[projects]]
   name = "github.com/aws/aws-lambda-go"
   packages = [
     "events",
@@ -75,16 +81,21 @@
   name = "github.com/ethereum/go-ethereum"
   packages = [
     ".",
+    "accounts",
     "accounts/abi",
+    "accounts/keystore",
     "common",
     "common/hexutil",
     "common/math",
+    "common/mclock",
     "core/types",
     "crypto",
+    "crypto/randentropy",
     "crypto/secp256k1",
     "crypto/sha3",
     "ethclient",
     "ethdb",
+    "event",
     "log",
     "metrics",
     "p2p/netutil",
@@ -228,6 +239,18 @@
   version = "v1.0.2"
 
 [[projects]]
+  name = "github.com/pborman/uuid"
+  packages = ["."]
+  revision = "e790cca94e6cc75c7064b1332e63811d4aae1a53"
+  version = "v1.1"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/rjeczalik/notify"
+  packages = ["."]
+  revision = "52ae50d8490436622a8941bd70c3dbe0acdd4bbf"
+
+[[projects]]
   name = "github.com/rs/cors"
   packages = ["."]
   revision = "ca016a06a5753f8ba03029c0aa5e54afb1bf713f"
@@ -263,6 +286,15 @@
   name = "github.com/whyrusleeping/tar-utils"
   packages = ["."]
   revision = "8c6c8ba81d5c71fd69c0f48dbde4b2fb422b6dfc"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+  packages = [
+    "pbkdf2",
+    "scrypt"
+  ]
+  revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
 
 [[projects]]
   branch = "master"
@@ -303,6 +335,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ed966ffb87050209451398e01a594900395eac913aab27d7900a6c1e2ca02edb"
+  inputs-digest = "9933e8d9d20add8d014ee8773b0365acfe8d120663f300b6000f661d8974bcd2"
   solver-name = "gps-cdcl"
   solver-version = 1

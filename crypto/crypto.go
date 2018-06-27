@@ -64,7 +64,7 @@ func getPrivateKeyFromDB(passphrase string) (privkey *ecdsa.PrivateKey, addr str
 	dbSecretKey := getConfigFromDB(DbSecretKeyPropName)
 	dbNonce := getConfigFromDB(DbNoncePropName)
 	dbKeyJSON := getConfigFromDB(DbKeyJSONPropName)
-	if dbSecretKey == "" && dbNonce == "" && dbKeyJSON == "" {
+	if dbSecretKey == "" || dbNonce == "" || dbKeyJSON == "" {
 		return
 	}
 
