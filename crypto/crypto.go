@@ -4,6 +4,7 @@ package crypto
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/ecdsa"
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
@@ -24,7 +25,7 @@ import (
 type Crypto struct {
 	secretKey string
 	nonce     string
-	privKey   string
+	privKey   *ecdsa.PrivateKey
 	Address   string
 	ChainID   *big.Int
 	Txnonce   uint64
@@ -54,24 +55,31 @@ func GetInstance() *Crypto {
 		dbPrivKey := getConfigFromDB(DbPrivKeyPropName)
 
 		bSuccess := false
-		var nPrivKey string
+		var ecdsaPrivKey *ecdsa.PrivateKey
 		if dbSecretKey != "" && dbNonce != "" && dbPrivKey != "" {
 			bSuccess = true
 			bNonce, _ := hex.DecodeString(dbNonce)
-			nPrivKey = DecryptAes(dbPrivKey, dbSecretKey, bNonce)
+			nPrivKey := DecryptAes(dbPrivKey, dbSecretKey, bNonce)
+			ecdsaPrivKey, _ = crypto.HexToECDSA(nPrivKey)
 		}
 
 		instance = &Crypto{
 			secretKey: dbSecretKey,
 			nonce:     dbNonce,
-			privKey:   nPrivKey,
-			Txnonce:   0,
+			privKey:   ecdsaPrivKey,
 		}
 		if bSuccess {
-			instance.Sign("0xabcdef")
+			instance.Sign("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")
 		}
 	})
 	return instance
+}
+
+func getPrivKeyFromFile(keyfile string) {
+	_, err := crypto.LoadECDSA(keyfile)
+	if err != nil {
+		return
+	}
 }
 
 // Sign returns signed message using own private key
@@ -99,8 +107,7 @@ func (c *Crypto) SignTx(tx *types.Transaction) (*types.Transaction, error) {
 	} else {
 		c.signer = types.HomesteadSigner{}
 	}
-	privKey, _ := crypto.HexToECDSA(c.privKey)
-	signedTx, err := types.SignTx(tx, c.signer, privKey)
+	signedTx, err := types.SignTx(tx, c.signer, c.privKey)
 	if err != nil {
 		return nil, fmt.Errorf("tx or private key is not appropriate")
 	}
@@ -108,10 +115,9 @@ func (c *Crypto) SignTx(tx *types.Transaction) (*types.Transaction, error) {
 }
 
 // Sign returns signed message using given private key
-func Sign(msg, privKey string) ([]byte, error) {
-	key, _ := crypto.HexToECDSA(privKey)
+func Sign(msg string, privKey *ecdsa.PrivateKey) ([]byte, error) {
 	bMsg := crypto.Keccak256([]byte(msg))
-	return crypto.Sign(signHash(bMsg), key)
+	return crypto.Sign(signHash(bMsg), privKey)
 }
 
 // getConfigFromDB returns value string matching given key at config table

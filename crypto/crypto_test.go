@@ -128,7 +128,8 @@ func TestProofRandomTrie(t *testing.T) {
 }
 
 func TestSign(t *testing.T) {
-	sig, err := Sign(testmsgraw2[2:], testprivhex)
+	key, err := crypto.HexToECDSA(testprivhex)
+	sig, err := Sign(testmsgraw2[2:], key)
 	if err != nil {
 		t.Errorf("Failed to sign %s", err)
 	}
