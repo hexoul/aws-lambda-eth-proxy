@@ -19,7 +19,7 @@ func TestMain(t *testing.T) {
 	main()
 }
 
-func TestHandler(t *testing.T) {
+func TestLambdaHandler(t *testing.T) {
 	req := json.RPCRequest{
 		Jsonrpc: "2.0",
 		Method:  "eth_getBalance",
@@ -28,7 +28,7 @@ func TestHandler(t *testing.T) {
 	req.Params = append(req.Params, "0xeeaf5f87cb85433a0db0fc31863b21d1c8279f7d")
 	req.Params = append(req.Params, "latest")
 	req.Params = append(req.Params, "ether")
-	resp, err := Handler(nil, events.APIGatewayProxyRequest{
+	resp, err := lambdaHandler(nil, events.APIGatewayProxyRequest{
 		Body: req.String(),
 	})
 	if resp.Body == "" || err != nil {
