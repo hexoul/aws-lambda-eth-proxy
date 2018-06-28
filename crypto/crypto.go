@@ -34,9 +34,12 @@ type Crypto struct {
 }
 
 // For singleton
-var instance *Crypto
-var once sync.Once
+var (
+	instance *Crypto
+	once     sync.Once
+)
 
+// For DB columns
 const (
 	// DbSecretKeyPropName is DB column name about secret key
 	DbSecretKeyPropName = "secret_key"
@@ -44,10 +47,14 @@ const (
 	DbNoncePropName = "nonce"
 	// DbKeyJSONPropName is DB column name about key json
 	DbKeyJSONPropName = "key_json"
+)
+
+// For environment arguments
+const (
 	// Passphrase means passphrase used to decrypt keystore
-	Passphrase = "passphrase"
+	Passphrase = "KEY_PASSPHRASE"
 	// Path means a location of keyjson in file system
-	Path = "key_path"
+	Path = "KEY_PATH"
 )
 
 // GetInstance returns pointer of Crypto instance
@@ -67,6 +74,7 @@ func GetInstance() *Crypto {
 			privkey, addr = getPrivateKeyFromFile(os.Getenv(Path), os.Getenv(Passphrase))
 		}
 		//fmt.Printf("privkey %s, addr: %s\n", hex.EncodeToString(crypto.FromECDSA(privkey)), addr)
+		fmt.Println("Crypto address is set to ", addr)
 		instance = &Crypto{
 			privKey: privkey,
 			Address: addr,

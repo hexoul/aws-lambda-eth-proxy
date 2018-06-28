@@ -14,6 +14,7 @@ import (
 func TestMain(t *testing.T) {
 	os.Setenv(crypto.Passphrase, "")
 	os.Setenv(crypto.Path, "crypto/test/testkey")
+	os.Setenv(IsAwsLambda, "")
 	flag.Parse()
 	main()
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"os"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
@@ -18,7 +20,11 @@ const (
 	ParamFuncName = "func"
 	// Targetnet indicates target network
 	Targetnet = rpc.Testnet
+	// IsAwsLambda decides if served as AWS lambda or not
+	IsAwsLambda = "AWS_LAMBDA"
 )
+
+var exitChan = make(chan int)
 
 // Handler handles APIGatewayProxyRequest as JSON-RPC request
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -63,5 +69,17 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 func main() {
 	predefined.Targetnet = Targetnet
 	crypto.GetInstance()
-	lambda.Start(Handler)
+
+	if os.Getenv(IsAwsLambda) != "" {
+		fmt.Println("Ready to start Lambda")
+		lambda.Start(Handler)
+	} else {
+		fmt.Println("Ready to start HTTP/HTTPS")
+		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprint(w, "Welcome to my website!")
+		})
+		go http.ListenAndServe(":8545", nil)
+		// go http.ListenAndServeTLS()
+		<-exitChan
+	}
 }
