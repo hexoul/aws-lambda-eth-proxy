@@ -8,7 +8,7 @@ Furthermore it applied IPFS API here to overwhelm limited storage of blockchain.
 # Features
 1. JSON-RPC relay with Ethereum node
 2. Proofs for sign and merkle tree such as Ecrecover, DeriveSha, VerifyProof and so on
-3. Sign, SignTx with encrypted private key on DynamoDB
+3. Sign, SignTx with encrypted private key on DynamoDB/Local
 4. IPFS interface
 5. fromWei, toWei written in Golang
 
@@ -23,17 +23,19 @@ Furthermore it applied IPFS API here to overwhelm limited storage of blockchain.
 2. Docker
   - Install at https://docs.docker.com/install
 3. xgo
-  - because of C compile in go-ethereum, we need improved cross-compiler
+  - because of compilation for C code used in go-ethereum, we need improved cross-compiler
   ```shell
   docker pull karalabe/xgo-latest
   go get github.com/karalabe/xgo
   ```
 
 # Build
-```shell
-cd $GOPATH/src/{repo start with github.com}
-make
-```
+1. Move to root directory of this repo
+2. Build on your preference
+  - In case of lambda that is cross-compile,
+`make` or `make lambda`
+  - In case of compile for local machine,
+`make local`
 
 # Test
 1. Move each module directory such as json, rpc and so on
@@ -42,7 +44,7 @@ make
 go test -v
 ```
 
-# Deploy
+# Deploy (for AWS Lambda)
 1. Set Lambda on AWS
   - Function package: compressed binary file in $GOPATH/src/{repo}/bin
   - Handler: eth-proxy (binary file name, it is optional)
