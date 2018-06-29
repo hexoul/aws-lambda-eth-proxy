@@ -25,8 +25,6 @@ const (
 	IsAwsLambda = "AWS_LAMBDA"
 )
 
-var exitChan = make(chan int)
-
 func handler(req json.RPCRequest) (body string, statusCode int) {
 	var resp json.RPCResponse
 	var err error
@@ -98,8 +96,7 @@ func main() {
 	} else {
 		fmt.Println("Ready to start HTTP/HTTPS")
 		http.HandleFunc("/", httpHandler)
-		go http.ListenAndServe(":8545", nil)
-		// go http.ListenAndServeTLS()
-		<-exitChan
+		http.ListenAndServe(":8545", nil)
+		// http.ListenAndServeTLS()
 	}
 }
