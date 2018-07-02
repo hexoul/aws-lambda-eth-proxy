@@ -5,6 +5,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 
+	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
 )
 
@@ -39,20 +40,20 @@ var (
 func TestGetAbiFromJson(t *testing.T) {
 	_, err := GetAbiFromJSON(testabijson2)
 	if err != nil {
-		t.Errorf("Failed to GetAbiFromJSON: %s", err)
+		t.Fatalf("Failed to GetAbiFromJSON: %s", err)
 	}
 }
 
 func TestPack(t *testing.T) {
 	abi, err := GetAbiFromJSON(testabijson2)
 	if err != nil {
-		t.Errorf("Failed to GetAbiFromJSON: %s", err)
+		t.Fatalf("Failed to GetAbiFromJSON: %s", err)
 	}
 
 	addr := common.HexToAddress(testaddr[2:])
 	data, err := Pack(abi, "address", addr)
 	if err != nil {
-		t.Errorf("Failed to Pack: %s", err)
+		t.Fatalf("Failed to Pack: %s", err)
 	}
 	t.Logf("data: %s", data)
 }
@@ -60,32 +61,33 @@ func TestPack(t *testing.T) {
 func TestCall(t *testing.T) {
 	abi, err := GetAbiFromJSON(testabijson)
 	if err != nil {
-		t.Errorf("Failed to GetAbiFromJSON")
+		t.Fatalf("Failed to GetAbiFromJSON")
 	}
 
+	crypto.GetDummy()
 	resp, err := Call(abi, rpc.Testnet, testcontractaddr, "owner", []interface{}{})
-	if err != nil || resp.Result == "" || resp.Error == nil || resp.Error.Code != 0 {
-		t.Errorf("Failed to Call")
+	if err != nil || resp.Result == nil || resp.Result == "" || resp.Error == nil || resp.Error.Code != 0 {
+		t.Fatalf("Failed to Call %s", err)
 	}
 	t.Logf("%s", resp.String())
 
 	var addr common.Address
 	Unpack(abi, &addr, "owner", resp.Result.(string))
 	if len(addr) == 0 {
-		t.Errorf("Failed to Unpack")
+		t.Fatalf("Failed to Unpack")
 	}
 }
 
 func TestSendTransaction(t *testing.T) {
 	abi, err := GetAbiFromJSON(testabijson)
 	if err != nil {
-		t.Errorf("Failed to GetAbiFromJSON")
+		t.Fatalf("Failed to GetAbiFromJSON")
 	}
 
 	addr := common.HexToAddress(testaddr[2:])
 	resp, err := DummySendTransaction(abi, rpc.Testnet, testcontractaddr, "transferOwnership", []interface{}{addr}, 0x1)
 	if err != nil || resp.Result == "" || resp.Error == nil || resp.Error.Code != 0 {
-		t.Errorf("Failed to SendTransaction")
+		t.Fatalf("Failed to SendTransaction %v", resp.Error)
 	}
 	t.Logf("%s", resp.String())
 }
@@ -93,13 +95,13 @@ func TestSendTransaction(t *testing.T) {
 func TestSendTransactionWithSign(t *testing.T) {
 	abi, err := GetAbiFromJSON(testabijson)
 	if err != nil {
-		t.Errorf("Failed to GetAbiFromJSON")
+		t.Fatalf("Failed to GetAbiFromJSON")
 	}
 
 	addr := common.HexToAddress(testaddr[2:])
 	resp, err := DummySendTransactionWithSign(abi, rpc.Testnet, testcontractaddr, "transferOwnership", []interface{}{addr}, 0xffff, 0x1)
 	if err != nil || resp.Result == "" || resp.Error == nil || resp.Error.Code != 0 {
-		t.Errorf("Failed to SendTransactionWithSign")
+		t.Fatalf("Failed to SendTransactionWithSign %v", resp.Error)
 	}
 	t.Logf("%s", resp.String())
 }
