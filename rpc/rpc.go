@@ -18,6 +18,7 @@ import (
 	ethjson "github.com/hexoul/aws-lambda-eth-proxy/json"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 // RPC is a JSON-RPC manager through HTTP
@@ -46,6 +47,8 @@ var (
 	// For singleton
 	instance *RPC
 	once     sync.Once
+	// IP => ethclient
+	ethClients = make(map[string]*ethclient.Client)
 	// IP => http fail count
 	httpFailCnt = make(map[string]int)
 	// NetType => available length of IP list
@@ -68,8 +71,10 @@ func GetInstance() *RPC {
 		instance.GasPrice = instance.GetGasPrice()
 
 		c := crypto.GetInstance()
-		c.InitChainID(instance.NetVersion)
-		c.InitNonce(instance.GetTransactionCount(c.GetAddress()))
+		if c != nil {
+			c.InitChainID(instance.NetVersion)
+			c.InitNonce(instance.GetTransactionCount(c.GetAddress()))
+		}
 	})
 	return instance
 }
@@ -84,6 +89,23 @@ func (r *RPC) getURL() (url string) {
 		break
 	}
 	return
+}
+
+// GetEthClient returns ether client among urls included in target net
+func (r *RPC) GetEthClient() *ethclient.Client {
+	var url string
+	switch r.NetType {
+	case Mainnet:
+		url = MainnetUrls[rand.Intn(availLen[Mainnet])]
+		break
+	case Testnet:
+		url = TestnetUrls[rand.Intn(availLen[Testnet])]
+		break
+	}
+	if ethClients[url] == nil {
+		ethClients[url], _ = ethclient.Dial(url)
+	}
+	return ethClients[url]
 }
 
 // refreshURLList sorts url list to avoid bad nodes

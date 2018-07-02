@@ -11,6 +11,20 @@ import (
 )
 
 func TestEthClient(t *testing.T) {
+	NetType = Testnet
+	r := GetInstance()
+	client := r.GetEthClient()
+	if client == nil {
+		t.Errorf("Failed to GetEthClient")
+	}
+
+	_, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		t.Fatalf("%s", err)
+	}
+}
+
+func TestEthClientRaw(t *testing.T) {
 	//client, err := ethclient.Dial("https://rinkeby.infura.io")
 	client, err := ethclient.Dial(TestnetUrls[0])
 	if err != nil {
