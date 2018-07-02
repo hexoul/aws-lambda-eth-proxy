@@ -23,7 +23,7 @@ func DummySendTransaction(abi abi.ABI, targetNet, to, name string, inputs []inte
 
 	c := crypto.GetDummy()
 	r := rpc.GetInstance(targetNet)
-	respStr, err := r.SendTransaction(c.Address, to, data, gas)
+	respStr, err := r.SendTransaction(c.GetAddress(), to, data, gas)
 	if err != nil {
 		return
 	}

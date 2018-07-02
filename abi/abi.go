@@ -66,14 +66,14 @@ func Call(abi abi.ABI, targetNet, to, name string, inputs []interface{}) (resp j
 
 // SendTransaction calls smart contract with ABI using eth_sendTransaction
 func SendTransaction(abi abi.ABI, targetNet, to, name string, inputs []interface{}, gas int) (resp json.RPCResponse, err error) {
-	data, err := Pack(abi, name, inputs...)
-	if err != nil {
+	var data string
+	if data, err = Pack(abi, name, inputs...); err != nil {
 		return
 	}
 
 	c := crypto.GetInstance()
 	r := rpc.GetInstance(targetNet)
-	respStr, err := r.SendTransaction(c.Address, to, data, gas)
+	respStr, err := r.SendTransaction(c.GetAddress(), to, data, gas)
 	if err != nil {
 		return
 	}
@@ -84,8 +84,8 @@ func SendTransaction(abi abi.ABI, targetNet, to, name string, inputs []interface
 
 // SendTransactionWithSign calls smart contract with ABI using eth_sendRawTransaction
 func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []interface{}, gasLimit, gasPrice uint64) (resp json.RPCResponse, err error) {
-	data, err := abi.Pack(name, inputs...)
-	if err != nil {
+	var data []byte
+	if data, err = abi.Pack(name, inputs...); err != nil {
 		return
 	}
 
@@ -93,28 +93,26 @@ func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []i
 	r := rpc.GetInstance(targetNet)
 
 	// Make TX function to get nonce
-	tx := func(nonce uint64) error {
+	tx := func(nonce uint64) (err error) {
 		tx := types.NewTransaction(nonce, common.HexToAddress(to), zero, uint64(gasLimit), big.NewInt(int64(gasPrice)), data)
-		tx, err = c.SignTx(tx)
-		if err != nil {
-			return err
+		if tx, err = c.SignTx(tx); err != nil {
+			return
 		}
 
-		rlpTx, err := rlp.EncodeToBytes(tx)
-		if err != nil {
-			return err
+		var rlpTx []byte
+		if rlpTx, err = rlp.EncodeToBytes(tx); err != nil {
+			return
 		}
 
-		respStr, err := r.SendRawTransaction(rlpTx)
-		if err != nil {
-			return err
+		var respStr string
+		if respStr, err = r.SendRawTransaction(rlpTx); err != nil {
+			return
 		}
 
-		resp = json.GetRPCResponseFromJSON(respStr)
-		if resp.Error == nil {
+		if resp = json.GetRPCResponseFromJSON(respStr); resp.Error == nil {
 			return fmt.Errorf("%s", resp.Error.Message)
 		}
-		return nil
+		return
 	}
 
 	c.ApplyNonce(tx)
