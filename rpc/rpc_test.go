@@ -40,7 +40,8 @@ func BenchmarkEthClient(b *testing.B) {
 }
 
 func BenchmarkHttpClient(b *testing.B) {
-	r := GetInstance(Testnet)
+	NetType = Testnet
+	r := GetInstance()
 	req := json.RPCRequest{
 		Jsonrpc: "2.0",
 		ID:      1,
@@ -60,7 +61,8 @@ func BenchmarkHttpClient(b *testing.B) {
 }
 
 func TestRefreshUrlList(t *testing.T) {
-	r := GetInstance(Testnet)
+	NetType = Testnet
+	r := GetInstance()
 	initLen := len(TestnetUrls)
 	target := TestnetUrls[0]
 	for i := 0; i < 30; i++ {
@@ -72,7 +74,8 @@ func TestRefreshUrlList(t *testing.T) {
 }
 
 func TestCall(t *testing.T) {
-	r := GetInstance(Testnet)
+	NetType = Testnet
+	r := GetInstance()
 	if _, err := r.Call("0x11", "0x123"); err != nil {
 		t.Errorf("Failed to RPC Call")
 	}
@@ -81,7 +84,8 @@ func TestCall(t *testing.T) {
 func TestRpc(t *testing.T) {
 	testMsg := "{\"jsonrpc\":\"2.0\",\"method\":\"web3_clientVersion\",\"params\":[\"a\",1],\"id\":100}"
 
-	r := GetInstance(Testnet)
+	NetType = Testnet
+	r := GetInstance()
 	// Test with string param
 	if _, err := r.DoRPC(testMsg); err != nil {
 		t.Errorf("Failed to RPC with string: %s", err)
@@ -97,7 +101,8 @@ func TestRpc(t *testing.T) {
 func BenchmarkRpc(b *testing.B) {
 	testMsg := "{\"jsonrpc\":\"2.0\",\"method\":\"web3_clientVersion\",\"params\":[\"a\",1],\"id\":100}"
 
-	r := GetInstance(Testnet)
+	NetType = Testnet
+	r := GetInstance()
 	for i := 0; i < b.N; i++ {
 		r.DoRPC(testMsg)
 	}

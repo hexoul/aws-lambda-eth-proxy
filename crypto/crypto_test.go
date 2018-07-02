@@ -78,7 +78,7 @@ func TestGetPrivKeyFromString(t *testing.T) {
 
 func TestGetDummy(t *testing.T) {
 	c := GetDummy()
-	if c.Address == "" {
+	if c.GetAddress() == "" {
 		t.Fatalf("Failed to ecrecover in dummy")
 	}
 }
