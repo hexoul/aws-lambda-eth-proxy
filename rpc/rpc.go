@@ -51,18 +51,19 @@ var (
 	// NetType => available length of IP list
 	availLen = make(map[string]int)
 	zero     = big.NewInt(0)
+	// NetType is either mainnet or testnet
+	NetType = Testnet
 )
 
-// GetInstance returns the instance of Rpc
-// _netType should be Mainnet or Testnet
-func GetInstance(_netType string) *RPC {
+// GetInstance returns the instance of RPC
+func GetInstance() *RPC {
 	once.Do(func() {
 		instance = &RPC{}
 		instance.InitClient()
 		availLen[Mainnet] = len(MainnetUrls)
 		availLen[Testnet] = len(TestnetUrls)
 
-		instance.NetType = _netType
+		instance.NetType = NetType
 		instance.NetVersion = instance.GetChainID()
 		instance.GasPrice = instance.GetGasPrice()
 

@@ -9,9 +9,6 @@ import (
 	"github.com/hexoul/aws-lambda-eth-proxy/web3"
 )
 
-// Targetnet indicates target network
-var Targetnet string
-
 // Sample
 func foo(req json.RPCRequest) (json.RPCResponse, error) {
 	fmt.Println("foo")
@@ -29,7 +26,7 @@ func getBalance(req json.RPCRequest) (json.RPCResponse, error) {
 
 	// RPC
 	var resp json.RPCResponse
-	respBody, err := rpc.GetInstance(Targetnet).DoRPC(req)
+	respBody, err := rpc.GetInstance().DoRPC(req)
 	if err == nil {
 		resp = json.GetRPCResponseFromJSON(respBody)
 		// Postprocessing

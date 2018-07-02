@@ -34,7 +34,7 @@ func handler(req json.RPCRequest) (body string, statusCode int) {
 	} else {
 		// Forward RPC request to Ether node
 		var respBody string
-		if respBody, err = rpc.GetInstance(Targetnet).DoRPC(req); err == nil {
+		if respBody, err = rpc.GetInstance().DoRPC(req); err == nil {
 			// Relay a response from the node
 			resp = json.GetRPCResponseFromJSON(respBody)
 		}
@@ -87,7 +87,7 @@ func httpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	predefined.Targetnet = Targetnet
+	rpc.NetType = Targetnet
 	crypto.GetInstance()
 
 	if os.Getenv(IsAwsLambda) != "" {

@@ -48,13 +48,13 @@ func Unpack(abi abi.ABI, v interface{}, name string, output string) error {
 }
 
 // Call gets contract value with contract address and name
-func Call(abi abi.ABI, targetNet, to, name string, inputs []interface{}) (resp json.RPCResponse, err error) {
+func Call(abi abi.ABI, to, name string, inputs []interface{}) (resp json.RPCResponse, err error) {
 	data, err := Pack(abi, name, inputs...)
 	if err != nil {
 		return
 	}
 
-	r := rpc.GetInstance(targetNet)
+	r := rpc.GetInstance()
 	respStr, err := r.Call(to, data)
 	if err != nil {
 		return
@@ -65,14 +65,14 @@ func Call(abi abi.ABI, targetNet, to, name string, inputs []interface{}) (resp j
 }
 
 // SendTransaction calls smart contract with ABI using eth_sendTransaction
-func SendTransaction(abi abi.ABI, targetNet, to, name string, inputs []interface{}, gas int) (resp json.RPCResponse, err error) {
+func SendTransaction(abi abi.ABI, to, name string, inputs []interface{}, gas int) (resp json.RPCResponse, err error) {
 	var data string
 	if data, err = Pack(abi, name, inputs...); err != nil {
 		return
 	}
 
 	c := crypto.GetInstance()
-	r := rpc.GetInstance(targetNet)
+	r := rpc.GetInstance()
 	respStr, err := r.SendTransaction(c.GetAddress(), to, data, gas)
 	if err != nil {
 		return
@@ -83,14 +83,14 @@ func SendTransaction(abi abi.ABI, targetNet, to, name string, inputs []interface
 }
 
 // SendTransactionWithSign calls smart contract with ABI using eth_sendRawTransaction
-func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []interface{}, gasLimit, gasPrice uint64) (resp json.RPCResponse, err error) {
+func SendTransactionWithSign(abi abi.ABI, to, name string, inputs []interface{}, gasLimit, gasPrice uint64) (resp json.RPCResponse, err error) {
 	var data []byte
 	if data, err = abi.Pack(name, inputs...); err != nil {
 		return
 	}
 
 	c := crypto.GetInstance()
-	r := rpc.GetInstance(targetNet)
+	r := rpc.GetInstance()
 
 	// Make TX function to get nonce
 	tx := func(nonce uint64) (err error) {
@@ -126,8 +126,8 @@ func GetAbiFromJSON(raw string) (abi.ABI, error) {
 
 // getAbiFromAddress is NOT YET SUPPORTED
 // TODO: use eth.compile.solidity?
-func getAbiFromAddress(targetNet, addr string) (abi abi.ABI) {
-	r := rpc.GetInstance(targetNet)
+func getAbiFromAddress(addr string) (abi abi.ABI) {
+	r := rpc.GetInstance()
 	respStr, err := r.GetCode(addr)
 	if err != nil {
 		return
