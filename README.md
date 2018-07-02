@@ -74,7 +74,7 @@ godoc -http=:6060
 
 [4] IPFS API, https://github.com/ipfs/go-ipfs-api
 
-[5] Cross compliling for ethereum, https://github.com/ethereum/go-ethereum/wiki/Cross-compiling-Ethereum
+[5] Cross compiling for ethereum, https://github.com/ethereum/go-ethereum/wiki/Cross-compiling-Ethereum
 
 [6] Xgo, https://github.com/karalabe/xgo
 

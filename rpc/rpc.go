@@ -67,8 +67,8 @@ func GetInstance(_netType string) *RPC {
 		instance.GasPrice = instance.GetGasPrice()
 
 		c := crypto.GetInstance()
-		c.ChainID = instance.NetVersion
-		c.Txnonce = instance.GetTransactionCount(c.Address)
+		c.InitChainID(instance.NetVersion)
+		c.InitNonce(instance.GetTransactionCount(c.GetAddress()))
 	})
 	return instance
 }
