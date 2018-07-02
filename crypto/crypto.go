@@ -13,6 +13,7 @@ import (
 	"math/big"
 	"os"
 	"sync"
+	"sync/atomic"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/common"
 	"github.com/hexoul/aws-lambda-eth-proxy/db"
@@ -25,18 +26,22 @@ import (
 )
 
 // Crypto manager
+// It should be initialized first at main
 type Crypto struct {
 	privKey *ecdsa.PrivateKey
+	signer  types.Signer
+
 	Address string
 	ChainID *big.Int
+	// Txnonce should not be modified in general. Use ApplyNonce()
 	Txnonce uint64
-	signer  types.Signer
 }
 
 // For singleton
 var (
 	instance *Crypto
 	once     sync.Once
+	mutex    = &sync.Mutex{}
 )
 
 // For DB columns
@@ -144,6 +149,22 @@ func (c *Crypto) SignTx(tx *types.Transaction) (*types.Transaction, error) {
 		return nil, fmt.Errorf("tx or private key is not appropriate")
 	}
 	return signedTx, nil
+}
+
+// ApplyNonce applies nonce to a given function "f"
+// Function description should be func(uint64) (error)
+// If given function returns nil error, increase nonce
+// Meaning of this function's return is either nonce was increased or not
+func (c *Crypto) ApplyNonce(f interface{}) bool {
+	mutex.Lock()
+	defer mutex.Unlock()
+	nonce := atomic.LoadUint64(&c.Txnonce)
+	err := f.(func(uint64) error)(nonce)
+	if err != nil {
+		return false
+	}
+	atomic.AddUint64(&c.Txnonce, 1)
+	return true
 }
 
 // Sign returns signed message using given private key

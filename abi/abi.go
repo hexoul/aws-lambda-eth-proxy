@@ -3,10 +3,9 @@ package abi
 
 import (
 	"encoding/hex"
+	"fmt"
 	"math/big"
 	"strings"
-	"sync"
-	"sync/atomic"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
@@ -20,8 +19,7 @@ import (
 )
 
 var (
-	zero  = big.NewInt(0)
-	mutex = &sync.Mutex{}
+	zero = big.NewInt(0)
 )
 
 // Pack makes packed data with inputs on ABI
@@ -91,35 +89,35 @@ func SendTransactionWithSign(abi abi.ABI, targetNet, to, name string, inputs []i
 		return
 	}
 
-	// Get TX nonce
 	c := crypto.GetInstance()
 	r := rpc.GetInstance(targetNet)
-	mutex.Lock()
-	defer mutex.Unlock()
-	if c.Txnonce == 0 {
-		c.Txnonce = r.GetTransactionCount(c.Address)
-	}
-	nonce := atomic.LoadUint64(&c.Txnonce)
-	tx := types.NewTransaction(nonce, common.HexToAddress(to), zero, uint64(gasLimit), big.NewInt(int64(gasPrice)), data)
-	tx, err = c.SignTx(tx)
-	if err != nil {
-		return
+
+	// Make TX function to get nonce
+	tx := func(nonce uint64) error {
+		tx := types.NewTransaction(nonce, common.HexToAddress(to), zero, uint64(gasLimit), big.NewInt(int64(gasPrice)), data)
+		tx, err = c.SignTx(tx)
+		if err != nil {
+			return err
+		}
+
+		rlpTx, err := rlp.EncodeToBytes(tx)
+		if err != nil {
+			return err
+		}
+
+		respStr, err := r.SendRawTransaction(rlpTx)
+		if err != nil {
+			return err
+		}
+
+		resp = json.GetRPCResponseFromJSON(respStr)
+		if resp.Error == nil {
+			return fmt.Errorf("%s", resp.Error.Message)
+		}
+		return nil
 	}
 
-	rlpTx, err := rlp.EncodeToBytes(tx)
-	if err != nil {
-		return
-	}
-
-	respStr, err := r.SendRawTransaction(rlpTx)
-	if err != nil {
-		return
-	}
-
-	resp = json.GetRPCResponseFromJSON(respStr)
-	if resp.Error == nil {
-		atomic.AddUint64(&c.Txnonce, 1)
-	}
+	c.ApplyNonce(tx)
 	return
 }
 
