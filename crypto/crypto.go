@@ -99,11 +99,10 @@ func getPrivateKeyFromDB(passphrase string) (privkey *ecdsa.PrivateKey, addr str
 
 	bNonce, _ := hex.DecodeString(dbNonce)
 	keyjson := DecryptAes(dbKeyJSON, dbSecretKey, bNonce)
-	key, err := keystore.DecryptKey([]byte(keyjson), passphrase)
-	if err != nil {
-		return
+	if key, err := keystore.DecryptKey([]byte(keyjson), passphrase); err == nil {
+		return key.PrivateKey, key.Address.String()
 	}
-	return key.PrivateKey, key.Address.String()
+	return
 }
 
 // getPrivateKeyFromFile returns private key and address from file
@@ -112,27 +111,24 @@ func getPrivateKeyFromFile(filepath, passphrase string) (privkey *ecdsa.PrivateK
 	if err != nil {
 		return
 	}
-	key, err := keystore.DecryptKey(keyjson, passphrase)
-	if err != nil {
-		return
+	if key, err := keystore.DecryptKey(keyjson, passphrase); err == nil {
+		return key.PrivateKey, key.Address.String()
 	}
-	return key.PrivateKey, key.Address.String()
+	return
 }
 
 // InitChainID initalizes chain ID
 func (c *Crypto) InitChainID(chainID *big.Int) {
-	if c.chainID != nil {
-		return
+	if c.chainID == nil {
+		c.chainID = chainID
 	}
-	c.chainID = chainID
 }
 
 // InitNonce initailizes TX nonce one time
 func (c *Crypto) InitNonce(nonce uint64) {
-	if c.txnonce > 0 {
-		return
+	if c.txnonce == 0 {
+		c.txnonce = nonce
 	}
-	c.txnonce = nonce
 }
 
 // GetAddress returns an address of Crypto manager

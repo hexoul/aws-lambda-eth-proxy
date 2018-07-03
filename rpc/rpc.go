@@ -79,8 +79,8 @@ func GetInstance() *RPC {
 	return instance
 }
 
-func (r *RPC) getURL() (url string) {
-	switch r.NetType {
+func randomURL(netType string) (url string) {
+	switch netType {
 	case Mainnet:
 		url = MainnetUrls[rand.Intn(availLen[Mainnet])]
 		break
@@ -91,17 +91,13 @@ func (r *RPC) getURL() (url string) {
 	return
 }
 
+func (r *RPC) getURL() string {
+	return randomURL(r.NetType)
+}
+
 // GetEthClient returns ether client among urls included in target net
 func (r *RPC) GetEthClient() *ethclient.Client {
-	var url string
-	switch r.NetType {
-	case Mainnet:
-		url = MainnetUrls[rand.Intn(availLen[Mainnet])]
-		break
-	case Testnet:
-		url = TestnetUrls[rand.Intn(availLen[Testnet])]
-		break
-	}
+	url := randomURL(r.NetType)
 	if ethClients[url] == nil {
 		ethClients[url], _ = ethclient.Dial(url)
 	}
@@ -151,7 +147,7 @@ func (r *RPC) refreshURLList(url string) {
 
 // InitClient initializes HTTP client to reduce handshaking overhead
 func (r *RPC) InitClient() {
-	var netTransport = &http.Transport{
+	netTransport := &http.Transport{
 		Dial: (&net.Dialer{
 			Timeout: 5 * time.Second,
 		}).Dial,

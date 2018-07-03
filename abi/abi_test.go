@@ -4,8 +4,6 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
-
-	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 )
 
 const testabijson = `
@@ -63,7 +61,6 @@ func TestCall(t *testing.T) {
 		t.Fatalf("Failed to GetAbiFromJSON")
 	}
 
-	crypto.GetDummy()
 	resp, err := Call(abi, testcontractaddr, "owner", []interface{}{})
 	if err != nil || resp.Result == nil || resp.Result == "" || resp.Error == nil || resp.Error.Code != 0 {
 		t.Fatalf("Failed to Call %s", err)
