@@ -11,11 +11,23 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-func TestMain(t *testing.T) {
-	os.Setenv(crypto.Passphrase, "")
+func TestHelp(t *testing.T) {
+	os.Args = os.Args[:1]
+	main()
+}
+
+func TestEnvMain(t *testing.T) {
+	os.Setenv(crypto.IsAwsLambda, "")
 	os.Setenv(crypto.Path, "crypto/test/testkey")
-	os.Setenv(IsAwsLambda, "")
+	os.Setenv(crypto.Passphrase, "")
 	flag.Parse()
+	main()
+}
+
+func TestArgMain(t *testing.T) {
+	os.Setenv(crypto.IsAwsLambda, "")
+	os.Args[1] = "crypto/test/testkey"
+	os.Args[2] = ""
 	main()
 }
 

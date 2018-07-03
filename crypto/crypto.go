@@ -39,9 +39,11 @@ type Crypto struct {
 
 // For singleton
 var (
-	instance *Crypto
-	once     sync.Once
-	mutex    = &sync.Mutex{}
+	instance       *Crypto
+	once           sync.Once
+	mutex          = &sync.Mutex{}
+	PathChan       = make(chan string)
+	PassphraseChan = make(chan string)
 )
 
 // For DB columns
@@ -60,23 +62,24 @@ const (
 	Passphrase = "KEY_PASSPHRASE"
 	// Path means a location of keyjson in file system
 	Path = "KEY_PATH"
+	// IsAwsLambda decides if served as AWS lambda or not
+	IsAwsLambda = "AWS_LAMBDA"
 )
 
 // GetInstance returns pointer of Crypto instance
 // Because DB operations are needed for Crypto initiation,
 // Crypto is designed as singleton to reduce the number of DB operation units used
 func GetInstance() *Crypto {
-	if os.Getenv(Path) == "" && os.Getenv(Passphrase) == "" {
-		return instance
-	}
-
 	once.Do(func() {
+		path := <-PathChan
+		passphrase := <-PassphraseChan
+
 		var privkey *ecdsa.PrivateKey
 		var addr string
-		if os.Getenv(Path) == "" {
-			privkey, addr = getPrivateKeyFromDB(os.Getenv(Passphrase))
+		if os.Getenv(IsAwsLambda) != "" {
+			privkey, addr = getPrivateKeyFromDB(passphrase)
 		} else {
-			privkey, addr = getPrivateKeyFromFile(os.Getenv(Path), os.Getenv(Passphrase))
+			privkey, addr = getPrivateKeyFromFile(path, passphrase)
 		}
 		//fmt.Printf("privkey %s, addr: %s\n", hex.EncodeToString(crypto.FromECDSA(privkey)), addr)
 		fmt.Println("Crypto address is set to ", addr)

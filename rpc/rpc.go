@@ -41,9 +41,12 @@ const (
 	threshold = 10
 	// RPC retry count
 	retryCnt = 3
+	// HTTP timeout
+	httpTimeout = 5
 )
 
 var (
+	zero = big.NewInt(0)
 	// For singleton
 	instance *RPC
 	once     sync.Once
@@ -53,7 +56,6 @@ var (
 	httpFailCnt = make(map[string]int)
 	// NetType => available length of IP list
 	availLen = make(map[string]int)
-	zero     = big.NewInt(0)
 	// NetType is either mainnet or testnet
 	NetType = Testnet
 )
@@ -149,12 +151,12 @@ func (r *RPC) refreshURLList(url string) {
 func (r *RPC) InitClient() {
 	netTransport := &http.Transport{
 		Dial: (&net.Dialer{
-			Timeout: 5 * time.Second,
+			Timeout: time.Second * httpTimeout,
 		}).Dial,
-		TLSHandshakeTimeout: 5 * time.Second,
+		TLSHandshakeTimeout: time.Second * httpTimeout,
 	}
 	r.client = &http.Client{
-		Timeout:   time.Second * 10,
+		Timeout:   time.Second * httpTimeout,
 		Transport: netTransport,
 	}
 }

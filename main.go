@@ -21,8 +21,6 @@ const (
 	ParamFuncName = "func"
 	// Targetnet indicates target network
 	Targetnet = rpc.Testnet
-	// IsAwsLambda decides if served as AWS lambda or not
-	IsAwsLambda = "AWS_LAMBDA"
 )
 
 func handler(req json.RPCRequest) (body string, statusCode int) {
@@ -86,11 +84,42 @@ func httpHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(respBody))
 }
 
+func help() {
+	fmt.Println("====== Need arguments")
+	fmt.Println("======== Option 1. key path only as argument")
+	fmt.Println("========== $> ./eth-proxy [path]")
+	fmt.Println("======== Option 2. key path and passphrase as argument")
+	fmt.Println("========== $> ./eth-proxy [path] [passphrase]")
+	fmt.Println("======== Option 3. key path and passphrase as environment variable")
+	fmt.Println("========== $> export KEY_PATH=[path]")
+	fmt.Println("========== $> export KEY_PASSPHRASE=[passphrase]")
+	fmt.Println("========== $> ./eth-proxy")
+}
+
 func main() {
 	rpc.NetType = Targetnet
+
+	// Initalize Crypto with arguments
+	var path, passphrase string
+	if path = os.Getenv(crypto.Path); path != "" {
+		passphrase = os.Getenv(crypto.Passphrase)
+		os.Setenv(crypto.Path, "")
+		os.Setenv(crypto.Passphrase, "")
+	} else if len(os.Args) > 1 {
+		path = os.Args[1]
+		if len(os.Args) > 2 {
+			passphrase = os.Args[2]
+		}
+	} else {
+		help()
+		return
+	}
+	go func() { crypto.PathChan <- path }()
+	go func() { crypto.PassphraseChan <- passphrase }()
 	crypto.GetInstance()
 
-	if os.Getenv(IsAwsLambda) != "" {
+	// Run
+	if os.Getenv(crypto.IsAwsLambda) != "" {
 		fmt.Println("Ready to start Lambda")
 		lambda.Start(lambdaHandler)
 	} else {
