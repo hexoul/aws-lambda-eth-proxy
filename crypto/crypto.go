@@ -99,6 +99,11 @@ func GetInstance() *Crypto {
 		} else {
 			privkey, addr = getPrivateKeyFromFile(path, passphrase)
 		}
+
+		if addr == "" {
+			panic("Failed to parse key json for Crypto")
+		}
+
 		//fmt.Printf("privkey %s, addr: %s\n", hex.EncodeToString(crypto.FromECDSA(privkey)), addr)
 		fmt.Println("Crypto address is set to ", addr)
 		instance = &Crypto{

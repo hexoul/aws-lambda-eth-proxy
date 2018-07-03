@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	//_ "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethdb"
@@ -11,6 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/trie"
 )
 
+// Transactions is a leaf hash list
 type Transactions struct {
 	hash []common.Hash
 }
@@ -31,6 +33,7 @@ func DeriveSha(txs []common.Hash) common.Hash {
 }
 */
 
+// DeriveSha calculates root hash based on transactions
 func DeriveSha(txs []common.Hash) (common.Hash, *trie.Trie) {
 	transactions := Transactions{hash: txs}
 	trie := new(trie.Trie)
@@ -44,6 +47,7 @@ func DeriveSha(txs []common.Hash) (common.Hash, *trie.Trie) {
 	return trie.Hash(), trie
 }
 
+// VerifyProof checks if root hash for transactions is valid
 func VerifyProof(txs []common.Hash, tr *trie.Trie) (bool, error) {
 	root := tr.Hash()
 	proofs := ethdb.NewMemDatabase()
@@ -57,4 +61,11 @@ func VerifyProof(txs []common.Hash, tr *trie.Trie) (bool, error) {
 		}
 	}
 	return true, nil
+}
+
+// GetTransactionOpts returns TransactOpts to create contract session
+func GetTransactionOpts() *bind.TransactOpts {
+	ins := GetInstance()
+	auth := bind.NewKeyedTransactor(ins.privKey)
+	return auth
 }
