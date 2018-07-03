@@ -14,6 +14,7 @@ import (
 	"os"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/common"
 	"github.com/hexoul/aws-lambda-eth-proxy/db"
@@ -70,8 +71,25 @@ const (
 // Because DB operations are needed for Crypto initiation,
 // Crypto is designed as singleton to reduce the number of DB operation units used
 func GetInstance() *Crypto {
+	// Check if already assigned
+	if instance != nil {
+		return instance
+	}
+
+	// Check channel within the timeout
+	var path string
+	select {
+	case path = <-PathChan:
+		break
+	case <-time.After(1 * time.Second):
+		break
+	}
+	if path == "" {
+		return instance
+	}
+
+	// Initalize
 	once.Do(func() {
-		path := <-PathChan
 		passphrase := <-PassphraseChan
 
 		var privkey *ecdsa.PrivateKey
