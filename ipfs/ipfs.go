@@ -28,7 +28,7 @@ func GetInstance() *Ipfs {
 		instance = &Ipfs{
 			s: ns,
 		}
-	}
+	})
 	return instance
 }
 

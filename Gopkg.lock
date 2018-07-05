@@ -83,6 +83,7 @@
     ".",
     "accounts",
     "accounts/abi",
+    "accounts/abi/bind",
     "accounts/keystore",
     "common",
     "common/hexutil",
@@ -315,6 +316,16 @@
   revision = "c11f84a56e43e20a78cee75a7c034031ecf57d1f"
 
 [[projects]]
+  branch = "master"
+  name = "golang.org/x/tools"
+  packages = [
+    "go/ast/astutil",
+    "imports",
+    "internal/fastwalk"
+  ]
+  revision = "75d2ffb453d53bed20f95f0d563ee000dc4c0c83"
+
+[[projects]]
   name = "gopkg.in/fatih/set.v0"
   packages = ["."]
   revision = "57907de300222151a123d29255ed17f5ed43fad3"
@@ -335,6 +346,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9933e8d9d20add8d014ee8773b0365acfe8d120663f300b6000f661d8974bcd2"
+  inputs-digest = "4d0b08a30811829018203cece8925d4531f1a7340af4749958f98c9ecd41e869"
   solver-name = "gps-cdcl"
   solver-version = 1
