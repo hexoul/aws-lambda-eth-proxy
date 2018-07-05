@@ -87,13 +87,13 @@ func httpHandler(w http.ResponseWriter, r *http.Request) {
 func help() {
 	fmt.Println("====== Need arguments")
 	fmt.Println("======== Option 1. key path only as argument")
-	fmt.Println("========== $> ./eth-proxy [path]")
+	fmt.Println("========== $> proxy [path]")
 	fmt.Println("======== Option 2. key path and passphrase as argument")
-	fmt.Println("========== $> ./eth-proxy [path] [passphrase]")
+	fmt.Println("========== $> .proxy [path] [passphrase]")
 	fmt.Println("======== Option 3. key path and passphrase as environment variable")
 	fmt.Println("========== $> export KEY_PATH=[path]")
 	fmt.Println("========== $> export KEY_PASSPHRASE=[passphrase]")
-	fmt.Println("========== $> ./eth-proxy")
+	fmt.Println("========== $> proxy")
 }
 
 func main() {
@@ -117,8 +117,10 @@ func main() {
 		help()
 		return
 	}
-	go func() { crypto.PathChan <- path }()
-	go func() { crypto.PassphraseChan <- passphrase }()
+	go func() {
+		crypto.PathChan <- path
+		crypto.PassphraseChan <- passphrase
+	}()
 	crypto.GetInstance()
 
 	// Run

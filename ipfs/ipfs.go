@@ -6,6 +6,7 @@ package ipfs
 import (
 	"bytes"
 	"io/ioutil"
+	"math/rand"
 	"sync"
 
 	"github.com/ipfs/go-ipfs-api"
@@ -21,11 +22,14 @@ var instance *Ipfs
 var once sync.Once
 
 // GetInstance returns an instance of Ipfs
-func GetInstance(url string) *Ipfs {
-	ns := shell.NewShell(url)
-	return &Ipfs{
-		s: ns,
+func GetInstance() *Ipfs {
+	once.Do(func() {
+		ns := shell.NewShell(ipfsUrls[rand.Intn(len(ipfsUrls))])
+		instance = &Ipfs{
+			s: ns,
+		}
 	}
+	return instance
 }
 
 // Cat returns data from IPFS with path(file hash)
