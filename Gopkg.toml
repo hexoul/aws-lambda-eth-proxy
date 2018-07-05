@@ -19,7 +19,6 @@
 #  name = "github.com/x/y"
 #  version = "2.4.0"
 
-
 [[constraint]]
   name = "github.com/aws/aws-lambda-go"
   version = "^1.0.1"
@@ -27,3 +26,11 @@
 [[constraint]]
   name = "github.com/ethereum/go-ethereum"
   version = "^1.8.11"
+
+[[override]]
+  name = "github.com/multiformats/go-multiaddr"
+  version = "^1.2.7"
+
+[[override]]
+  name = "github.com/multiformats/go-multihash"
+  version = "^1.0.8"
