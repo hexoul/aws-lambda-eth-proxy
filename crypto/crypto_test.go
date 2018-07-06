@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	crand "crypto/rand"
 	"encoding/hex"
+	"fmt"
 	"io/ioutil"
 	"testing"
 
@@ -155,7 +156,7 @@ func TestSign(t *testing.T) {
 	addr, ecErr := EcRecover(hexutil.Encode(crypto.Keccak256([]byte(msg))), hexutil.Encode(sig))
 	if ecErr != nil {
 		t.Fatalf("Failed to sign, ecrecover error %s", ecErr)
-	} else if addr != testaddr2 {
+	} else if fmt.Sprintf("0x%x", addr) != testaddr2 {
 		t.Errorf("Failed to sign, ecrecover mismatch have(%s) want(%s)", addr, testaddr2)
 	}
 }
@@ -206,12 +207,13 @@ func TestEcRecoverPubkey(t *testing.T) {
 
 func TestEcRecover(t *testing.T) {
 	addr, err := EcRecover(testmsgraw2, testsigraw2)
-	if err != nil || addr != testaddr {
+	saddr := fmt.Sprintf("0x%x", addr)
+	if err != nil || saddr != testaddr {
 		t.Errorf("Failed to EcRecover %s", err)
 	}
 
 	addr, err = EcRecover(testmsgraw3, testsigraw3)
-	if err != nil || addr != testaddr {
+	if err != nil || saddr != testaddr {
 		t.Errorf("Failed to EcRecover %s", err)
 	}
 }

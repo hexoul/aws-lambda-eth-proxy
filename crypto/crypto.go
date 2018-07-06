@@ -172,8 +172,11 @@ func (c *Crypto) Sign(msg string) string {
 
 	ret := hexutil.Encode(sig)
 	if c.address == "" {
-		c.address, _ = EcRecover(hexutil.Encode(crypto.Keccak256([]byte(msg))), ret)
-		fmt.Printf("Crypto address is set to %s\n", c.address)
+		addr, err := EcRecover(hexutil.Encode(crypto.Keccak256([]byte(msg))), ret)
+		if err != nil {
+			c.address = fmt.Sprintf("0x%x", addr)
+			fmt.Printf("Crypto address is set to %s\n", c.address)
+		}
 	}
 	return ret
 }
@@ -261,30 +264,31 @@ func signHash(data []byte) []byte {
 // the V value must be be 27 or 28 for legacy reasons.
 //
 // https://github.com/ethereum/go-ethereum/wiki/Management-APIs#personal_ecRecover
-func EcRecover(dataStr, sigStr string) (string, error) {
+func EcRecover(dataStr, sigStr string) (addr ethcommon.Address, err error) {
 	data := hexutil.MustDecode(dataStr)
 	sig := hexutil.MustDecode(sigStr)
 	if len(sig) != 65 {
-		return "", fmt.Errorf("signature must be 65 bytes long")
+		err = fmt.Errorf("signature must be 65 bytes long")
+		return
 	}
 	if sig[64] == 0 || sig[64] == 1 {
 		// Nothing to do
 	} else if sig[64] == 27 || sig[64] == 28 {
 		sig[64] -= 27 // Transform yellow paper V from 27/28 to 0/1
 	} else {
-		return "", fmt.Errorf("invalid Ethereum signature (V is not 27 or 28)")
+		err = fmt.Errorf("invalid Ethereum signature (V is not 27 or 28)")
+		return
 	}
 
 	rpk, err := crypto.Ecrecover(signHash(data), sig)
 	if err != nil {
-		return "", err
+		return
 	}
 	pubKey, err := crypto.UnmarshalPubkey(rpk)
 	if err != nil {
-		return "", err
+		return
 	}
-	recoveredAddr := crypto.PubkeyToAddress(*pubKey)
-	return fmt.Sprintf("0x%x", recoveredAddr), nil
+	return crypto.PubkeyToAddress(*pubKey), nil
 }
 
 // EcRecoverToPubkey returns public key through EcRecover
