@@ -48,9 +48,6 @@ func handler(req json.RPCRequest) (body string, statusCode int) {
 			Message: err.Error(),
 		}
 		statusCode = 400
-	} else if resp.Error != nil && resp.Error.Code != 0 {
-		// In case of ether-node-side RPC fail
-		statusCode = 400
 	}
 	body = resp.String()
 	return
