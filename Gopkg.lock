@@ -270,6 +270,12 @@
   version = "v1.4.0"
 
 [[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
+  version = "v1.0.5"
+
+[[projects]]
   name = "github.com/spaolacci/murmur3"
   packages = ["."]
   revision = "9f5d223c60793748f04a9d5b4b4eacddfc1f755d"
@@ -313,7 +319,8 @@
     "blake2s",
     "pbkdf2",
     "scrypt",
-    "sha3"
+    "sha3",
+    "ssh/terminal"
   ]
   revision = "a49355c7e3f8fe157a85be2f77e6e269a0f89602"
 
@@ -367,6 +374,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c4b24441ed2ac25b0d6ed099f2fcfef0c50ada4df50edad8d3450580a7004ca9"
+  inputs-digest = "da347685d7e296863e05e8dc614928a9e7d0d0b5cf244fc5e4ffe47ff59cfcb5"
   solver-name = "gps-cdcl"
   solver-version = 1

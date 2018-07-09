@@ -10,6 +10,7 @@ import (
 	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	_ "github.com/hexoul/aws-lambda-eth-proxy/ipfs"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
+	_ "github.com/hexoul/aws-lambda-eth-proxy/log"
 	"github.com/hexoul/aws-lambda-eth-proxy/predefined"
 	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
 
