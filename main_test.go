@@ -11,24 +11,30 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-func TestHelp(t *testing.T) {
+func testHelp() {
 	os.Args = os.Args[:1]
-	main()
 }
 
-func TestEnvMain(t *testing.T) {
+func testEnv() {
 	os.Setenv(crypto.IsAwsLambda, "")
 	os.Setenv(crypto.Path, "crypto/test/testkey")
 	os.Setenv(crypto.Passphrase, "")
-	flag.Parse()
-	main()
 }
 
-func TestArgMain(t *testing.T) {
+func testArg() {
 	os.Setenv(crypto.IsAwsLambda, "")
 	os.Args[1] = "crypto/test/testkey"
 	os.Args[2] = ""
-	main()
+}
+
+// FIXME: os.Setenv is not reflected to main()
+func TestMain(m *testing.M) {
+	//testHelp()
+	//testEnv()
+	testArg()
+
+	flag.Parse()
+	os.Exit(m.Run())
 }
 
 func TestLambdaHandler(t *testing.T) {

@@ -83,18 +83,18 @@ func httpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func help() {
-	fmt.Println("====== Need arguments")
-	fmt.Println("======== Option 1. key path only as argument")
-	fmt.Println("========== $> proxy [path]")
-	fmt.Println("======== Option 2. key path and passphrase as argument")
-	fmt.Println("========== $> .proxy [path] [passphrase]")
-	fmt.Println("======== Option 3. key path and passphrase as environment variable")
-	fmt.Println("========== $> export KEY_PATH=[path]")
-	fmt.Println("========== $> export KEY_PASSPHRASE=[passphrase]")
-	fmt.Println("========== $> proxy")
+	fmt.Println("USAGE")
+	fmt.Println("  Option 1. key path only as argument")
+	fmt.Println("    $> proxy [path]")
+	fmt.Println("  Option 2. key path and passphrase as argument")
+	fmt.Println("    $> .proxy [path] [passphrase]")
+	fmt.Println("  Option 3. key path and passphrase as environment variable")
+	fmt.Println("    $> export KEY_PATH=[path]")
+	fmt.Println("    $> export KEY_PASSPHRASE=[passphrase]")
+	fmt.Println("    $> proxy")
 }
 
-func main() {
+func init() {
 	rpc.NetType = Targetnet
 
 	// Initalize Crypto with arguments
@@ -103,7 +103,7 @@ func main() {
 		passphrase = os.Getenv(crypto.Passphrase)
 		os.Setenv(crypto.Path, "")
 		os.Setenv(crypto.Passphrase, "")
-	} else if len(os.Args) > 1 {
+	} else if len(os.Args) > 1 && os.Args[1] != "help" {
 		path = os.Args[1]
 		if len(os.Args) > 2 {
 			passphrase = os.Args[2]
@@ -113,15 +113,16 @@ func main() {
 		}
 	} else {
 		help()
-		return
+		panic("Please refer above help")
 	}
 	go func() {
 		crypto.PathChan <- path
 		crypto.PassphraseChan <- passphrase
 	}()
 	crypto.GetInstance()
+}
 
-	// Run
+func main() {
 	if os.Getenv(crypto.IsAwsLambda) != "" {
 		fmt.Println("Ready to start Lambda")
 		lambda.Start(lambdaHandler)
