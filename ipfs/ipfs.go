@@ -5,8 +5,11 @@ package ipfs
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"os/exec"
+	"strings"
 	"sync"
 
 	"github.com/ipfs/go-ipfs-api"
@@ -49,4 +52,24 @@ func (ipfs *Ipfs) Cat(path string) (ret string) {
 func (ipfs *Ipfs) Add(data string) (string, error) {
 	ndata := bytes.NewBufferString(data)
 	return ipfs.s.Add(ndata)
+}
+
+// Pin the given path
+func (ipfs *Ipfs) Pin(path string) error {
+	return ipfs.s.Pin(path)
+}
+
+// PinByCluster is pinning path by IPFS cluster
+// TODO: it needs remote control for IPFS cluster like IPFS node, now it is just cli
+func (ipfs *Ipfs) PinByCluster(path string) error {
+	cmd := exec.Command("ipfs-cluster-ctl", "pin", "add", path)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return err
+	}
+	outStr := string(out)
+	if !strings.Contains(outStr, path) {
+		return fmt.Errorf("%s", outStr)
+	}
+	return nil
 }

@@ -12,6 +12,14 @@ const (
 	exampleHash = "Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u"
 )
 
+func TestPinByCluster(t *testing.T) {
+	s := GetInstance()
+	err := s.PinByCluster(exampleHash)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestCat(t *testing.T) {
 	is := is.New(t)
 	s := GetInstance()
