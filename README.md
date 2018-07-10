@@ -47,12 +47,13 @@ go test -v
 ```
 
 # Usage
-1. $> proxy [KEY_JSON_PATH] -log_lev=debug -log_dir=/log/proxy.log
-2. $> proxy [KEY_JSON_PATH] [KEY_JSON_PASSPHRASE] -log_lev=debug -log_dir=/log/proxy.log
-- ```log_lev``` and ```log_dir``` are optional
+1. $> proxy [KEY_JSON_PATH] -log_lev=debug -log_dir=/log/proxy.log -log_fmt=json
+2. $> proxy [KEY_JSON_PATH] [KEY_JSON_PASSPHRASE] -log_lev=debug -log_dir=/log/proxy.log -log_fmt=json
+- ```log_lev```, ```log_dir``` and ```log_fmt``` are optional
 - default:
   * log_lev: warn
   * log_dir: stdout
+  * log_fmt: text
 
 # Deploy (for AWS Lambda)
 1. Set Lambda on AWS

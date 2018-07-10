@@ -28,6 +28,15 @@ func init() {
 			continue
 		} else if arg[0] == "-log_out" {
 			logPath = arg[1]
+		} else if arg[0] == "-log_fmt" {
+			switch strings.ToLower(arg[1]) {
+			case "text":
+				logger.Formatter = &log.TextFormatter{}
+				break
+			case "json":
+				logger.Formatter = &log.JSONFormatter{}
+				break
+			}
 		} else if arg[0] == "-log_lev" {
 			switch strings.ToLower(arg[1]) {
 			case "debug":

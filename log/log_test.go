@@ -7,10 +7,10 @@ import (
 
 func TestGeneral(t *testing.T) {
 	// Ascending log level
-	Debug("debug")
-	Info("info")
-	Error("error")
-	Warn("warn")
+	Debug("debug", "1")
+	Info("info", "2")
+	Error("error", "3")
+	Warn("warn", "4")
 }
 
 func TestPanic(t *testing.T) {
