@@ -18,6 +18,7 @@ import (
 
 	"github.com/hexoul/aws-lambda-eth-proxy/common"
 	"github.com/hexoul/aws-lambda-eth-proxy/db"
+	"github.com/hexoul/aws-lambda-eth-proxy/log"
 
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	ethcommon "github.com/ethereum/go-ethereum/common"
@@ -202,14 +203,17 @@ func (c *Crypto) SignTx(tx *types.Transaction) (*types.Transaction, error) {
 // If given function returns nil error, increase nonce
 // Meaning of this function's return is either nonce was increased or not
 func (c *Crypto) ApplyNonce(f interface{}) bool {
+	log.Info("Trying to lock for nonce...")
 	mutex.Lock()
 	defer mutex.Unlock()
 	nonce := atomic.LoadUint64(&c.txnonce)
+	log.Infof("Apply nonce [%ld] to func given", nonce)
 	err := f.(func(uint64) error)(nonce)
 	if err != nil {
 		return false
 	}
 	atomic.AddUint64(&c.txnonce, 1)
+	log.Info("Nonce was increased by one")
 	return true
 }
 
