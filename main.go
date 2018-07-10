@@ -108,7 +108,7 @@ func init() {
 		path = os.Args[1]
 		if len(os.Args) > 2 {
 			passphrase = os.Args[2]
-		} else {
+		} else if len(os.Args) == 2 || os.Args[2][0] == '-' {
 			fmt.Printf("Passphrase: ")
 			fmt.Scanln(&passphrase)
 		}

@@ -63,9 +63,19 @@ func Debug(args ...interface{}) {
 	logger.Debug(args)
 }
 
+// Debugf debug-level logging with format
+func Debugf(format string, args ...interface{}) {
+	logger.Debugf(format, args)
+}
+
 // Info level logging
 func Info(args ...interface{}) {
 	logger.Info(args)
+}
+
+// Infof info-level logging with format
+func Infof(format string, args ...interface{}) {
+	logger.Infof(format, args)
 }
 
 // Warn level logging
@@ -73,9 +83,19 @@ func Warn(args ...interface{}) {
 	logger.Warn(args)
 }
 
+// Warnf warn-level logging with format
+func Warnf(format string, args ...interface{}) {
+	logger.Warnf(format, args)
+}
+
 // Error level logging
 func Error(args ...interface{}) {
 	logger.Error(args)
+}
+
+// Errorf error-level logging with format
+func Errorf(format string, args ...interface{}) {
+	logger.Errorf(format, args)
 }
 
 // Fatal level logging and os.Exit
@@ -83,7 +103,17 @@ func Fatal(args ...interface{}) {
 	logger.Fatal(args)
 }
 
+// Fatalf fatal-level logging with format
+func Fatalf(format string, args ...interface{}) {
+	logger.Fatalf(format, args)
+}
+
 // Panic level logging and panic
 func Panic(args ...interface{}) {
 	logger.Panic(args)
+}
+
+// Panicf panic-level logging with format
+func Panicf(format string, args ...interface{}) {
+	logger.Panicf(format, args)
 }
