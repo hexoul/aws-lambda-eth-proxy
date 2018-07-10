@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	_ "github.com/hexoul/aws-lambda-eth-proxy/ipfs"
@@ -106,9 +107,9 @@ func init() {
 		os.Setenv(crypto.Passphrase, "")
 	} else if len(os.Args) > 1 && os.Args[1] != "help" {
 		path = os.Args[1]
-		if len(os.Args) > 2 {
+		if len(os.Args) > 2 && !strings.HasPrefix(os.Args[2], "-") {
 			passphrase = os.Args[2]
-		} else if len(os.Args) == 2 || os.Args[2][0] == '-' {
+		} else {
 			fmt.Printf("Passphrase: ")
 			fmt.Scanln(&passphrase)
 		}
