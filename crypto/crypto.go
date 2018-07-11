@@ -207,7 +207,7 @@ func (c *Crypto) ApplyNonce(f interface{}) bool {
 	mutex.Lock()
 	defer mutex.Unlock()
 	nonce := atomic.LoadUint64(&c.txnonce)
-	log.Infof("Apply nonce [%ld] to func given", nonce)
+	log.Infof("Apply nonce [%d] to func given", nonce)
 	err := f.(func(uint64) error)(nonce)
 	if err != nil {
 		return false

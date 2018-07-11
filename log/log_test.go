@@ -8,6 +8,12 @@ import (
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
 )
 
+func TestFormatd(t *testing.T) {
+	var a uint64
+	a = 55555555555555
+	Warnf("%d", a)
+}
+
 func TestId(t *testing.T) {
 	id := common.RandomUint64()
 	// Ascending log level
