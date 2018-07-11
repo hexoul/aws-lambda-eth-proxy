@@ -11,7 +11,7 @@ import (
 	"github.com/hexoul/aws-lambda-eth-proxy/crypto"
 	_ "github.com/hexoul/aws-lambda-eth-proxy/ipfs"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
-	_ "github.com/hexoul/aws-lambda-eth-proxy/log"
+	"github.com/hexoul/aws-lambda-eth-proxy/log"
 	"github.com/hexoul/aws-lambda-eth-proxy/predefined"
 	"github.com/hexoul/aws-lambda-eth-proxy/rpc"
 
@@ -125,11 +125,12 @@ func init() {
 }
 
 func main() {
+	log.Info("Server starting...")
 	if os.Getenv(crypto.IsAwsLambda) != "" {
-		fmt.Println("Ready to start Lambda")
+		log.Info("Ready to start Lambda")
 		lambda.Start(lambdaHandler)
 	} else {
-		fmt.Println("Ready to start HTTP/HTTPS")
+		log.Info("Ready to start HTTP/HTTPS")
 		http.HandleFunc("/", httpHandler)
 		http.ListenAndServe(":8545", nil)
 		// http.ListenAndServeTLS()

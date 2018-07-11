@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/common"
+	"github.com/hexoul/aws-lambda-eth-proxy/json"
 )
 
 func TestId(t *testing.T) {
@@ -14,6 +15,11 @@ func TestId(t *testing.T) {
 	Infod(id, "info", "2")
 	Warnd(id, "warn", "3")
 	Errord(id, "error", "4")
+}
+
+func TestJson(t *testing.T) {
+	resp := &json.RPCResponse{}
+	Error(resp.String())
 }
 
 func TestGeneral(t *testing.T) {
