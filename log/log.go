@@ -67,7 +67,7 @@ func init() {
 		stdoutLogger.SetLevel(logger.Level)
 	}
 	if logPath != "" {
-		if logger.Out, err = os.Create(logPath); err != nil {
+		if logger.Out, err = os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666); err != nil {
 			panic("Failed to create log file")
 		}
 	}
