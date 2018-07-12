@@ -2,12 +2,20 @@
 package log
 
 import (
+	"os"
 	"testing"
 	"time"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/common"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
 )
+
+func TestStderr(t *testing.T) {
+	if f, err := os.OpenFile("./test.stderr", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666); err == nil {
+		redirectStderr(f)
+	}
+	panic("TestStderr")
+}
 
 func TestSeq(t *testing.T) {
 	f := func(s string) {
