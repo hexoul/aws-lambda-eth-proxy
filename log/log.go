@@ -32,7 +32,6 @@ func init() {
 		} else if arg[0] == "-log_out" {
 			logPath = arg[1]
 			stdoutLogger = log.New()
-			stdoutLogger.Formatter = &log.TextFormatter{}
 			stdoutLogger.Out = os.Stdout
 		} else if arg[0] == "-log_fmt" {
 			switch strings.ToLower(arg[1]) {
@@ -49,6 +48,7 @@ func init() {
 		}
 	}
 	if stdoutLogger != nil {
+		stdoutLogger.Formatter = logger.Formatter
 		stdoutLogger.SetLevel(logger.Level)
 	}
 	if logPath != "" {
