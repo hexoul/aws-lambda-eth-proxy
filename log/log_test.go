@@ -3,10 +3,23 @@ package log
 
 import (
 	"testing"
+	"time"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/common"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
 )
+
+func TestSeq(t *testing.T) {
+	f := func(s string) {
+		for i := 0; i < 10; i++ {
+			Info(s)
+		}
+	}
+	go f("1")
+	go f("2")
+	go f("3")
+	time.Sleep(2 * time.Second)
+}
 
 func TestFormatd(t *testing.T) {
 	var a uint64

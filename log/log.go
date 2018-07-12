@@ -17,7 +17,7 @@ func init() {
 	// Default configuration
 	logger.Formatter = &log.TextFormatter{}
 	logger.Out = os.Stdout
-	logger.SetLevel(log.WarnLevel)
+	logger.SetLevel(log.InfoLevel)
 
 	// Advanced configuration
 	var err error

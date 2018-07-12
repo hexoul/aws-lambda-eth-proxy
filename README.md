@@ -51,7 +51,7 @@ go test -v
 2. $> proxy [KEY_JSON_PATH] [KEY_JSON_PASSPHRASE] -log_lev=debug -log_out=/log/proxy.log -log_fmt=json
 - ```log_lev```, ```log_out``` and ```log_fmt``` are optional
 - default:
-  * log_lev: warn
+  * log_lev: info
   * log_out: stdout
   * log_fmt: text
 
