@@ -48,7 +48,10 @@ func init() {
 		}
 	}
 	if stdoutLogger != nil {
-		stdoutLogger.Formatter = logger.Formatter
+		stdoutLogger.Formatter = &log.TextFormatter{
+			TimestampFormat: "02-01-2006 15:04:05",
+			FullTimestamp:   true,
+		}
 		stdoutLogger.SetLevel(logger.Level)
 	}
 	if logPath != "" {
