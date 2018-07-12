@@ -51,7 +51,7 @@ func init() {
 		if f, err := os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666); err == nil {
 			logger.Out = io.MultiWriter(f, os.Stdout)
 		} else {
-			panic("Failed to create log file")
+			Panic("Failed to create log file")
 		}
 		// Stderr
 		if f, err := os.OpenFile(logPath+".stderr", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666); err == nil {

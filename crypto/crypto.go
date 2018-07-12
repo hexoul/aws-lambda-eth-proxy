@@ -102,11 +102,11 @@ func GetInstance() *Crypto {
 		}
 
 		if addr == "" {
-			panic("Failed to parse key json for Crypto")
+			log.Panic("Failed to parse key json for Crypto")
 		}
 
 		//fmt.Printf("privkey %s, addr: %s\n", hex.EncodeToString(crypto.FromECDSA(privkey)), addr)
-		fmt.Println("Crypto address is set to ", addr)
+		log.Info("Crypto address is set to ", addr)
 		instance = &Crypto{
 			privKey: privkey,
 			address: addr,
@@ -176,7 +176,7 @@ func (c *Crypto) Sign(msg string) string {
 		addr, err := EcRecover(hexutil.Encode(crypto.Keccak256([]byte(msg))), ret)
 		if err != nil {
 			c.address = fmt.Sprintf("0x%x", addr)
-			fmt.Printf("Crypto address is set to %s\n", c.address)
+			log.Infof("Crypto address is set to %s\n", c.address)
 		}
 	}
 	return ret
@@ -207,7 +207,7 @@ func (c *Crypto) ApplyNonce(f interface{}) bool {
 	mutex.Lock()
 	defer mutex.Unlock()
 	nonce := atomic.LoadUint64(&c.txnonce)
-	log.Infof("Apply nonce [%d] to func given", nonce)
+	log.Infof("Apply nonce %d to func given", nonce)
 	err := f.(func(uint64) error)(nonce)
 	if err != nil {
 		return false
@@ -317,7 +317,7 @@ func EncryptAes(text, keyStr, nonceStr string) (string, []byte) {
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		panic(err.Error())
+		log.Panic(err.Error())
 	}
 
 	// Never use more than 2^32 random nonces with a given key because of the risk of a repeat.
@@ -325,7 +325,7 @@ func EncryptAes(text, keyStr, nonceStr string) (string, []byte) {
 	if nonceStr == "" {
 		nonce = make([]byte, 12)
 		if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-			panic(err.Error())
+			log.Panic(err.Error())
 		}
 	} else {
 		nonce, _ = hex.DecodeString(nonceStr)
@@ -333,7 +333,7 @@ func EncryptAes(text, keyStr, nonceStr string) (string, []byte) {
 
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
-		panic(err.Error())
+		log.Panic(err.Error())
 	}
 
 	ciphertext := aesgcm.Seal(nil, nonce, plaintext, nil)
@@ -347,17 +347,17 @@ func DecryptAes(text, keyStr string, nonce []byte) string {
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		panic(err.Error())
+		log.Panic(err.Error())
 	}
 
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
-		panic(err.Error())
+		log.Panic(err.Error())
 	}
 
 	plaintext, err := aesgcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
-		panic(err.Error())
+		log.Panic(err.Error())
 	}
 	return string(plaintext[:])
 }

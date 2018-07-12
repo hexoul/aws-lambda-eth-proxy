@@ -2,9 +2,10 @@
 package db
 
 import (
-	"fmt"
 	"os"
 	"sync"
+
+	"github.com/hexoul/aws-lambda-eth-proxy/log"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -49,14 +50,14 @@ func New(region string) *DynamoDBHelper {
 	},
 	)
 	if err != nil {
-		fmt.Println("Failed to create AWS session")
+		log.Error("db: failed to create AWS session")
 		return nil
 	}
 
 	// Create DynamoDB client
 	svc := dynamodb.New(sess)
 	if svc == nil {
-		fmt.Println("Failed to create DynamoDB client")
+		log.Error("db: failed to create DynamoDB client")
 		return nil
 	}
 
@@ -72,12 +73,12 @@ func New(region string) *DynamoDBHelper {
 func (d *DynamoDBHelper) ListTables() {
 	result, err := d.client.ListTables(&dynamodb.ListTablesInput{})
 	if err != nil {
-		fmt.Println(err)
+		log.Info(err)
 	}
 
-	fmt.Println("Tables:")
+	log.Info("Tables:")
 	for _, n := range result.TableNames {
-		fmt.Println(*n)
+		log.Info(*n)
 	}
 }
 
@@ -115,7 +116,7 @@ func (d *DynamoDBHelper) GetItem(tblName, propName, propVal, targetName string) 
 	// Make the DynamoDB Query API call
 	result, err := d.client.Scan(params)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Info(err.Error())
 		return nil
 	}
 	return result
@@ -126,6 +127,6 @@ func (d *DynamoDBHelper) UnmarshalMap(in map[string]*dynamodb.AttributeValue, ou
 	if in == nil {
 		return
 	} else if err := dynamodbattribute.UnmarshalMap(in, &out); err != nil {
-		fmt.Println("Failed to unmarshalMap of dynamoDb output")
+		log.Error("db: failed to unmarshalMap of dynamoDb output")
 	}
 }

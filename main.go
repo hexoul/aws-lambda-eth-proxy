@@ -105,7 +105,7 @@ func init() {
 		passphrase = os.Getenv(crypto.Passphrase)
 		os.Setenv(crypto.Path, "")
 		os.Setenv(crypto.Passphrase, "")
-	} else if len(os.Args) > 1 && os.Args[1] != "help" {
+	} else if len(os.Args) > 1 && !strings.HasPrefix(os.Args[1], "-") && os.Args[1] != "help" {
 		path = os.Args[1]
 		if len(os.Args) > 2 && !strings.HasPrefix(os.Args[2], "-") {
 			passphrase = os.Args[2]
@@ -115,7 +115,7 @@ func init() {
 		}
 	} else {
 		help()
-		panic("Please refer above help")
+		log.Panic("Please refer above help")
 	}
 	go func() {
 		crypto.PathChan <- path

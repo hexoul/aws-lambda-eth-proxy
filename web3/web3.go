@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/hexoul/aws-lambda-eth-proxy/common"
+	"github.com/hexoul/aws-lambda-eth-proxy/log"
 )
 
 // GetValueOfUnit returns a value about given unit
@@ -32,7 +33,7 @@ func getBigFloat(number string) *big.Float {
 	}
 
 	if err != nil {
-		fmt.Println("Failed to convert number")
+		log.Error("web3: failed to convert number")
 		return nil
 	}
 	return val
