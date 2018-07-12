@@ -15,7 +15,10 @@ func init() {
 	logger = log.New()
 
 	// Default configuration
-	logger.Formatter = &log.TextFormatter{}
+	logger.Formatter = &log.TextFormatter{
+		TimestampFormat: "02-01-2006 15:04:05",
+		FullTimestamp:   true,
+	}
 	logger.Out = os.Stdout
 	logger.SetLevel(log.InfoLevel)
 
@@ -33,33 +36,15 @@ func init() {
 			stdoutLogger.Out = os.Stdout
 		} else if arg[0] == "-log_fmt" {
 			switch strings.ToLower(arg[1]) {
-			case "text":
-				logger.Formatter = &log.TextFormatter{}
-				break
 			case "json":
-				logger.Formatter = &log.JSONFormatter{}
+				logger.Formatter = &log.JSONFormatter{
+					TimestampFormat: "02-01-2006 15:04:05",
+				}
 				break
 			}
 		} else if arg[0] == "-log_lev" {
-			switch strings.ToLower(arg[1]) {
-			case "debug":
-				logger.SetLevel(log.DebugLevel)
-				break
-			case "info":
-				logger.SetLevel(log.InfoLevel)
-				break
-			case "warn":
-				logger.SetLevel(log.WarnLevel)
-				break
-			case "error":
-				logger.SetLevel(log.ErrorLevel)
-				break
-			case "fatal":
-				logger.SetLevel(log.FatalLevel)
-				break
-			case "panic":
-				logger.SetLevel(log.PanicLevel)
-				break
+			if lev, err := log.ParseLevel(strings.ToLower(arg[1])); err != nil {
+				logger.SetLevel(lev)
 			}
 		}
 	}
@@ -67,7 +52,7 @@ func init() {
 		stdoutLogger.SetLevel(logger.Level)
 	}
 	if logPath != "" {
-		if logger.Out, err = os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666); err != nil {
+		if logger.Out, err = os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666); err != nil {
 			panic("Failed to create log file")
 		}
 	}
