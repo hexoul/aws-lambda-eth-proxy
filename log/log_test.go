@@ -2,6 +2,7 @@
 package log
 
 import (
+	"net/http"
 	"os"
 	"testing"
 	"time"
@@ -9,6 +10,16 @@ import (
 	"github.com/hexoul/aws-lambda-eth-proxy/common"
 	"github.com/hexoul/aws-lambda-eth-proxy/json"
 )
+
+func TestTelegramBot(t *testing.T) {
+	accessToken := ""
+	chatID := ""
+	msg := "alertbot"
+	url := "https://api.telegram.org/bot" + accessToken + "/sendMessage?chat_id=" + chatID + "&text=" + msg
+	if _, err := http.Get(url); err != nil {
+		t.Fatalf("Failed to sendMessage")
+	}
+}
 
 func TestStderr(t *testing.T) {
 	if f, err := os.OpenFile("./test.stderr", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666); err == nil {
@@ -55,6 +66,7 @@ func TestGeneral(t *testing.T) {
 	Info("info", "2")
 	Warn("warn", "3")
 	Error("error", "4")
+	time.Sleep(2 * time.Second)
 }
 
 func TestPanic(t *testing.T) {
@@ -63,11 +75,9 @@ func TestPanic(t *testing.T) {
 			t.Log("Recovered in ", r)
 		}
 	}()
-
 	Panic("panic")
 }
 
 func TestFatal(t *testing.T) {
-
 	Fatal("fatal")
 }
