@@ -27,6 +27,7 @@ const (
 )
 
 func handler(req json.RPCRequest) (body string, statusCode int) {
+	log.Info("request:", req.String())
 	var resp json.RPCResponse
 	var err error
 	if predefined.Contains(req.Method) {
