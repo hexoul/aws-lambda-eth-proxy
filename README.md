@@ -59,7 +59,13 @@ go test -v
 ## Usage
 1. $> proxy [KEY_JSON_PATH] -log_lev=debug -log_out=/log/proxy.log -log_fmt=json
 2. $> proxy [KEY_JSON_PATH] [KEY_JSON_PASSPHRASE] -log_lev=debug -log_out=/log/proxy.log -log_fmt=json
-- ```log_lev```, ```log_out``` and ```log_fmt``` are optional
+- ```log_lev```, ```log_out```, ```log_fmt```, ```log_bot_token``` and ```log_bot_chatid``` are optional
+- description:
+  * log_lev: log level
+  * log_out: log output location
+  * log_fmt: log format, text or JSON
+  * log_bot_token: telegram access token
+  * log_bot_chatid: telegram chat ID
 - default:
   * log_lev: info
   * log_out: stdout
