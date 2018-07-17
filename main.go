@@ -17,6 +17,8 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+
+	"github.com/fvbock/endless"
 )
 
 const (
@@ -132,8 +134,8 @@ func main() {
 		lambda.Start(lambdaHandler)
 	} else {
 		log.Info("Ready to start HTTP/HTTPS")
-		http.HandleFunc("/", httpHandler)
-		http.ListenAndServe(":8545", nil)
-		// http.ListenAndServeTLS()
+		h := http.NewServeMux()
+		h.HandleFunc("/", httpHandler)
+		endless.ListenAndServe(":8545", h)
 	}
 }

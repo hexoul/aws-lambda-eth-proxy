@@ -109,6 +109,12 @@
   version = "v1.8.11"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/fvbock/endless"
+  packages = ["."]
+  revision = "447134032cb6a86814f570257390a379982dfc61"
+
+[[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
   revision = "06f5f3d67269ccec1fe5fe4134ba6e982984f7f5"
@@ -374,6 +380,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "da347685d7e296863e05e8dc614928a9e7d0d0b5cf244fc5e4ffe47ff59cfcb5"
+  inputs-digest = "f7d569cc0fd44154d5dba47c5d3a888b491336bb2048c5429a692953deef7c19"
   solver-name = "gps-cdcl"
   solver-version = 1
