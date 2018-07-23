@@ -47,7 +47,7 @@ func handler(req json.RPCRequest) (body string, statusCode int) {
 	statusCode = 200
 	if err != nil {
 		// In case of server-side RPC fail
-		fmt.Println(err.Error())
+		log.Error(err.Error())
 		resp.Error = &json.RPCError{
 			Code:    -1,
 			Message: err.Error(),
