@@ -102,7 +102,7 @@ func help() {
 func init() {
 	rpc.NetType = Targetnet
 
-	// Initalize Crypto with arguments
+	// Initialize Crypto with arguments
 	var path, passphrase string
 	if path = os.Getenv(crypto.Path); path != "" {
 		passphrase = os.Getenv(crypto.Passphrase)

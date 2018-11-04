@@ -89,7 +89,7 @@ func GetInstance() *Crypto {
 		return instance
 	}
 
-	// Initalize
+	// Initialize
 	once.Do(func() {
 		passphrase := <-PassphraseChan
 
@@ -144,14 +144,14 @@ func getPrivateKeyFromFile(filepath, passphrase string) (privkey *ecdsa.PrivateK
 	return
 }
 
-// InitChainID initalizes chain ID
+// InitChainID initializes chain ID
 func (c *Crypto) InitChainID(chainID *big.Int) {
 	if c.chainID == nil {
 		c.chainID = chainID
 	}
 }
 
-// InitNonce initailizes TX nonce one time
+// InitNonce initializes TX nonce one time
 func (c *Crypto) InitNonce(nonce uint64) {
 	if c.txnonce == 0 {
 		c.txnonce = nonce

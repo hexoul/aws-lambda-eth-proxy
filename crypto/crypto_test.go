@@ -211,11 +211,6 @@ func TestEcRecover(t *testing.T) {
 	if err != nil || saddr != testaddr {
 		t.Errorf("Failed to EcRecover %s", err)
 	}
-
-	addr, err = EcRecover(testmsgraw3, testsigraw3)
-	if err != nil || saddr != testaddr {
-		t.Errorf("Failed to EcRecover %s", err)
-	}
 }
 
 func TestVerifySignature(t *testing.T) {
