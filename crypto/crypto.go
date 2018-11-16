@@ -44,6 +44,7 @@ var (
 	instance       *Crypto
 	once           sync.Once
 	mutex          = &sync.Mutex{}
+	path           string
 	PathChan       = make(chan string)
 	PassphraseChan = make(chan string)
 )
@@ -68,6 +69,16 @@ const (
 	IsAwsLambda = "AWS_LAMBDA"
 )
 
+func init() {
+	// Check channel within the timeout
+	select {
+	case path = <-PathChan:
+		break
+	case <-time.After(2 * time.Second):
+		break
+	}
+}
+
 // GetInstance returns pointer of Crypto instance
 // Because DB operations are needed for Crypto initiation,
 // Crypto is designed as singleton to reduce the number of DB operation units used
@@ -77,15 +88,8 @@ func GetInstance() *Crypto {
 		return instance
 	}
 
-	// Check channel within the timeout
-	var path string
-	select {
-	case path = <-PathChan:
-		break
-	case <-time.After(1 * time.Second):
-		break
-	}
-	if path == "" {
+	// Without path, crypto cannot be initialized on general machine, not lambda
+	if os.Getenv(IsAwsLambda) == "" && path == "" {
 		return instance
 	}
 
@@ -102,11 +106,11 @@ func GetInstance() *Crypto {
 		}
 
 		if addr == "" {
-			log.Panic("Failed to parse key json for Crypto")
+			log.Panic("Failed to parse key json for crypto package")
 		}
 
 		//fmt.Printf("privkey %s, addr: %s\n", hex.EncodeToString(crypto.FromECDSA(privkey)), addr)
-		log.Info("Crypto address is set to ", addr)
+		log.Info("ethereum address is set to ", addr)
 		instance = &Crypto{
 			privKey: privkey,
 			address: addr,

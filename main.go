@@ -117,8 +117,8 @@ func init() {
 			fmt.Scanln(&passphrase)
 		}
 	} else {
-		help()
-		log.Panic("Please refer above help")
+		// crypto package may be unused
+		return
 	}
 	go func() {
 		crypto.PathChan <- path
