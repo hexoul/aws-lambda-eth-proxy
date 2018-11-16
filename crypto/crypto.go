@@ -65,8 +65,8 @@ const (
 	Passphrase = "KEY_PASSPHRASE"
 	// Path means a location of keyjson in file system
 	Path = "KEY_PATH"
-	// IsAwsLambda decides if served as AWS lambda or not
-	IsAwsLambda = "AWS_LAMBDA"
+	// IsLambda decides if served as AWS lambda or not
+	IsLambda = "IS_LAMBDA"
 )
 
 func init() {
@@ -89,7 +89,7 @@ func GetInstance() *Crypto {
 	}
 
 	// Without path, crypto cannot be initialized on general machine, not lambda
-	if os.Getenv(IsAwsLambda) == "" && path == "" {
+	if os.Getenv(IsLambda) == "" && path == "" {
 		return instance
 	}
 
@@ -99,10 +99,10 @@ func GetInstance() *Crypto {
 
 		var privkey *ecdsa.PrivateKey
 		var addr string
-		if os.Getenv(IsAwsLambda) != "" {
-			privkey, addr = getPrivateKeyFromDB(passphrase)
-		} else {
+		if os.Getenv(IsLambda) == "FALSE" {
 			privkey, addr = getPrivateKeyFromFile(path, passphrase)
+		} else {
+			privkey, addr = getPrivateKeyFromDB(passphrase)
 		}
 
 		if addr == "" {

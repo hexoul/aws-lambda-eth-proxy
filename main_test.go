@@ -16,13 +16,13 @@ func testHelp() {
 }
 
 func testEnv() {
-	os.Setenv(crypto.IsAwsLambda, "")
+	os.Setenv(crypto.IsLambda, "")
 	os.Setenv(crypto.Path, "crypto/test/testkey")
 	os.Setenv(crypto.Passphrase, "")
 }
 
 func testArg() {
-	os.Setenv(crypto.IsAwsLambda, "")
+	os.Setenv(crypto.IsLambda, "")
 	os.Args[1] = "crypto/test/testkey"
 	os.Args[2] = ""
 }

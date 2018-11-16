@@ -136,13 +136,13 @@ func init() {
 
 func main() {
 	log.Info("Server starting...")
-	if os.Getenv(crypto.IsAwsLambda) != "" {
-		log.Info("Ready to start Lambda")
-		lambda.Start(lambdaHandler)
-	} else {
+	if os.Getenv(crypto.IsLambda) == "FALSE" {
 		log.Info("Ready to start HTTP/HTTPS")
 		h := http.NewServeMux()
 		h.HandleFunc("/", httpHandler)
 		endless.ListenAndServe(":8545", h)
+	} else {
+		log.Info("Ready to start Lambda")
+		lambda.Start(lambdaHandler)
 	}
 }

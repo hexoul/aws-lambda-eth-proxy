@@ -27,7 +27,7 @@ func getBigFloat(number string) *big.Float {
 	var err error
 	val := new(big.Float)
 	if number[:2] == "0x" {
-		_, _, err = val.Parse(number[:2], 16)
+		_, _, err = val.Parse(number[2:], 16)
 	} else {
 		_, _, err = val.Parse(number, 10)
 	}
