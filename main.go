@@ -28,6 +28,13 @@ const (
 	Targetnet = rpc.Testnet
 )
 
+var (
+	lambdaHeaders = map[string]string{
+		"Content-Type":                "application/json",
+		"Access-Control-Allow-Origin": "*",
+	}
+)
+
 func handler(req json.RPCRequest) (body string, statusCode int) {
 	log.Info("request:", req.String())
 	var resp json.RPCResponse
@@ -69,7 +76,7 @@ func lambdaHandler(ctx context.Context, request events.APIGatewayProxyRequest) (
 	}
 
 	respBody, statusCode := handler(req)
-	return events.APIGatewayProxyResponse{Body: respBody, StatusCode: statusCode}, nil
+	return events.APIGatewayProxyResponse{Headers: lambdaHeaders, Body: respBody, StatusCode: statusCode}, nil
 }
 
 // httpHandler handles http.Request as JSON-RPC request
