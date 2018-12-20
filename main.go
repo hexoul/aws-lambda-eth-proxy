@@ -30,8 +30,10 @@ const (
 
 var (
 	lambdaHeaders = map[string]string{
-		"Content-Type":                "application/json",
-		"Access-Control-Allow-Origin": "*",
+		"Content-Type":                     "application/json",
+		"Access-Control-Allow-Origin":      "*",
+		"Access-Control-Allow-Headers":     "Authorization, Origin, Accept, Referer, User-Agent, Content-Type, X-Requested-With, X-Api-Key, X-Amz-Date, X-Amz-Security-Token, X-Amz-User-Agent",
+		"Access-Control-Allow-Credentials": "true",
 	}
 )
 

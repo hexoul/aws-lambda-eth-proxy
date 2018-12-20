@@ -54,6 +54,24 @@ package:
 functions:
   eth-rpc:
     handler: bin/eth-rpc
+    events:
+       - http:
+        path: eth-rpc
+        method: any
+        cors:
+        origin: '*'
+        headers:
+          - Content-Type
+          - Authorization
+          - Origin
+          - Accept
+          - Referer
+          - User-Agent
+          - X-Amz-Date
+          - X-Api-Key
+          - X-Amz-Security-Token
+          - X-Amz-User-Agent
+        allowCredentials: false
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
