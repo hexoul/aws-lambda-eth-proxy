@@ -3,7 +3,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/hexoul/aws-lambda-eth-proxy)](https://goreportcard.com/report/github.com/hexoul/aws-lambda-eth-proxy)
 [![GoDoc](https://godoc.org/github.com/hexoul/aws-lambda-eth-proxy?status.svg)](https://godoc.org/github.com/hexoul/aws-lambda-eth-proxy)
 
-> AWS Lambda project as ethereum proxy following JSON-RPC, written in Golang. In addition, this project try porting web3 to Golang. Furthermore it applied IPFS API here to overwhelm limited storage of blockchain.
+> AWS Lambda project as ethereum reverse proxy following JSON-RPC, written in Golang. In addition, this project try porting web3 to Golang. Furthermore it applied IPFS API here to overwhelm limited storage of blockchain.
 
 ## Contents
 
